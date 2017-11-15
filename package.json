@@ -2,7 +2,7 @@
   "name": "gitfame-backend",
   "version": "1.0.0",
   "description": "Backend in Node.js for gitfa.me",
-  "main": "github_api.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/samkit-jain/gitfame-backend#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "express": "^4.16.2"
   }
 }
