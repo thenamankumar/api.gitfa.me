@@ -7,6 +7,12 @@ const app = express();
 
 const port = 8080
 
+app.use(body_parser.urlencoded({extended: true}));
+
+app.use(function(req, res) {
+	res.status(404).json({url: req.originalUrl + ' not found'})
+});
+
 require('./app/routes')(app, {});
 app.listen(port, () => {
 	console.log('Running on ' + port);
