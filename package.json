@@ -1,0 +1,22 @@
+{
+  "name": "gitfame-backend",
+  "version": "1.0.0",
+  "description": "Backend in Node.js for gitfa.me",
+  "main": "github_api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samkit-jain/gitfame-backend.git"
+  },
+  "author": "Samkit Jain",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/samkit-jain/gitfame-backend/issues"
+  },
+  "homepage": "https://github.com/samkit-jain/gitfame-backend#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
