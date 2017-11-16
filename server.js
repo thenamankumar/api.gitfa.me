@@ -5,17 +5,18 @@ const body_parser = require('body-parser');
 
 const app = express();
 
-const port = 8080
+const port = 8081
 
 app.use(body_parser.urlencoded({extended: true}));
-
-app.use(function(req, res) {
-	res.status(404).json({url: req.originalUrl + ' not found'})
-});
 
 require('./app/routes')(app, {});
 app.listen(port, () => {
 	console.log('Running on ' + port);
+});
+
+// on error 404
+app.use(function(req, res) {
+	res.status(404).json({url: req.originalUrl + ' not found'})
 });
 
 /*
