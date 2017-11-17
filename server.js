@@ -18,11 +18,3 @@ app.listen(port, () => {
 app.use(function(req, res) {
 	res.status(404).json({url: req.originalUrl + ' not found'})
 });
-
-/*
-app.get('/', (req, res) => {
-	res.send('Hello World!');
-});
-
-app.listen(3000, () => console.log('Example app listening on port 3000!'));
-*/
