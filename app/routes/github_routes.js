@@ -84,19 +84,70 @@ module.exports = function(app, db) {
 							});
 						});
 
+						let particpation_promises = [];
+
 						// counting number of forks and stars on repos by user
 						for(let i = 0; i < user_info['repos'].length; i++) {
 							if(user_info['login'] === user_info['repos'][i]['owner_login']) {
 								user_info['stars'] += user_info['repos'][i]['stargazers_count'];
 								user_info['forks'] += user_info['repos'][i]['forks_count'];
 							}
+
+							particpation_promises.push(fetch_participants(1));
+
+							function fetch_participants(page) {
+								return fetch(user_info['repos'][i]['contributors_url'] + "?client_id=306bffb6acf1e4b78303&client_secret=64f16f44d1346f04b72e6c9cb3f60e727b400c88&anon=1&per_page=100&page=" + page)
+									.then((response) => {
+										if (response.ok)
+											return response.text();
+										else
+											throw new Error("Error!");
+									})
+									.then((response) => {
+										if (!response)
+											throw new Error("no data");
+				
+										let contributors = JSON.parse(response);
+										
+										if (contributors.length === 0)
+											return contributors;
+										
+										let our_user = contributors.find((item) => {
+											return item['login'] === user_info['login'];
+										});
+										
+										if(our_user) {
+											user_info['repos'][i]['commits'] = our_user['contributions'];
+											user_info['commits'] += user_info['repos'][i]['commits'];
+										}
+
+										contributors.forEach((item) => {
+											user_info['repos'][i]['all_commits'] += item['contributions'];
+										});
+										
+										return fetch_participants(page + 1);
+									})
+									.catch(err => console.log(err));
+							}
 						}
+
+						return Promise.all(particpation_promises);
+						//res.json(user_info);
+					})
+					.then(() => {
+						user_info['repos'].sort((l, r) => {
+							if(l['commits'] < r['commits'])
+								return 1;
+							else if(l['commits'] === r['commits']) {
+								if (l['all_commits'] < r['all_commits'])
+									return 1;
+								else return -1;
+							}
+							else return -1;
+						});
 
 						res.json(user_info);
 					});
-					// .then(() => {
-					// 	hjh
-					// });
 			})
 			.catch(error => {
 				console.log(error);
