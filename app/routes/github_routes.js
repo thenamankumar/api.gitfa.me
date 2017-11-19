@@ -1,10 +1,10 @@
 const fetch = require('node-fetch');
 
-// list all repositories by a user
+// details repositories by the user
 const get_repositories = url => fetch(url)
 	.then(response => response.json());
 
-// details of forked repos
+// details of forked repositories by the user
 const fork_details = url => fetch(url)
 	.then(response => response.json());
 
@@ -16,6 +16,7 @@ module.exports = function(app, db) {
 				if(response.ok)
 					return response.json();
 				else
+					// user does not exist
 					throw new Error("Not found");
 			})
 			.then(user_data => {
@@ -27,8 +28,8 @@ module.exports = function(app, db) {
 					'stars': 0,
 					'forks': 0,
 				};
-				// array to store repository URLs
-				let repo_urls = [];
+
+				let repo_urls = [];  // array to store repository URLs
 
 				// saving required fields in user_info
 				user_info['public_repos'] = user_data['public_repos'];
@@ -40,22 +41,27 @@ module.exports = function(app, db) {
 				user_info['name'] = user_data['name'];
 				user_info['bio'] = user_data['bio'];
 
+				// each page has upto 500 repositories
 				repo_url = 'https://api.github.com/users/' + req.params.name + '/repos?client_id=306bffb6acf1e4b78303&client_secret=64f16f44d1346f04b72e6c9cb3f60e727b400c88&type=all&per_page=500&page=';
 
+				// get URL of all pages with upto 500 repositories on each page
 				for(let page_count = 1; page_count <= Math.floor(user_info['public_repos'] / 500) + 1; page_count++) {
 					repo_urls.push(repo_url + page_count)
 				}
 
+				// calculate stats for every repository
 				Promise
 					.all(repo_urls.map(get_repositories))
 					.then(values => {
-						let forks_urls = [];
+						let forks_urls = [];  // array to store forked repository URLs
 
 						values.forEach((repo_data) => {
 							for(let i = 0; i < repo_data.length; i++) {
 								if(repo_data[i]['fork']) {
+									// if repository is a forked, get data of repository from which it's forked
 									forks_urls.push(repo_data[i]['url'] + '?client_id=306bffb6acf1e4b78303&client_secret=64f16f44d1346f04b72e6c9cb3f60e727b400c88');
 								} else {
+									// not a forked repository. Calculate stars, watches, forks, etc.
 									user_info['repos'].push({
 										'stargazers_count': repo_data[i]['stargazers_count'],
 										'contributors_url': repo_data[i]['contributors_url'],
@@ -74,6 +80,7 @@ module.exports = function(app, db) {
 						return Promise.all(forks_urls.map(fork_details));
 					})
 					.then(forks => {
+						// calculate same stats as above for forked repositories
 						forks.forEach((fork_data) => {
 							user_info['repos'].push({
 								'stargazers_count': fork_data['parent']['stargazers_count'],
@@ -90,8 +97,8 @@ module.exports = function(app, db) {
 
 						let particpation_promises = [];
 
-						// counting number of forks and stars on repos by user
 						for(let i = 0; i < user_info['repos'].length; i++) {
+							// counting number of forks and stars
 							if(user_info['login'] === user_info['repos'][i]['owner_login']) {
 								user_info['stars'] += user_info['repos'][i]['stargazers_count'];
 								user_info['forks'] += user_info['repos'][i]['forks_count'];
@@ -99,6 +106,7 @@ module.exports = function(app, db) {
 
 							particpation_promises.push(fetch_participants(1));
 
+							// calculating commits (by our user and by other contributors) on the repository
 							function fetch_participants(page) {
 								return fetch(user_info['repos'][i]['contributors_url'] + "?client_id=306bffb6acf1e4b78303&client_secret=64f16f44d1346f04b72e6c9cb3f60e727b400c88&anon=1&per_page=100&page=" + page)
 									.then((response) => {
@@ -120,11 +128,13 @@ module.exports = function(app, db) {
 											return item['login'] === user_info['login'];
 										});
 										
+										// commits by our user
 										if(our_user) {
 											user_info['repos'][i]['commits'] = our_user['contributions'];
 											user_info['commits'] += user_info['repos'][i]['commits'];
 										}
 
+										// commits by all
 										contributors.forEach((item) => {
 											user_info['repos'][i]['all_commits'] += item['contributions'];
 										});
@@ -136,9 +146,9 @@ module.exports = function(app, db) {
 						}
 
 						return Promise.all(particpation_promises);
-						//res.json(user_info);
 					})
 					.then(() => {
+						// sorting the repositories based on commits count
 						user_info['repos'].sort((l, r) => {
 							if(l['commits'] < r['commits'])
 								return 1;
