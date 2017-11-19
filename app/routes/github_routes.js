@@ -13,11 +13,15 @@ module.exports = function(app, db) {
 		// get basic user information
 		fetch('https://api.github.com/users/' + req.params.name + '?client_id=306bffb6acf1e4b78303&client_secret=64f16f44d1346f04b72e6c9cb3f60e727b400c88')
 			.then(response => {
-				return response.json();
+				if(response.ok)
+					return response.json();
+				else
+					throw new Error("Not found");
 			})
 			.then(user_data => {
 				// dictionary to store all the fields (data) of the user
 				let user_info = {
+					'success': true,
 					'commits': 0,
 					'repos': [],
 					'stars': 0,
@@ -146,12 +150,11 @@ module.exports = function(app, db) {
 							else return -1;
 						});
 
-						res.json(user_info);
+						return res.json(user_info);
 					});
 			})
 			.catch(error => {
-				console.log(error);
-				res.json({'error': error});
+				return res.json({'success': false, 'message': error.message});
 			});
 	});
 };

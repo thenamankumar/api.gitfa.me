@@ -1,3 +1,5 @@
+// To enable HTTPS: see https://stackoverflow.com/questions/11744975/enabling-https-on-express-js?rq=1
+
 // For HTTP
 
 const express = require('express');
