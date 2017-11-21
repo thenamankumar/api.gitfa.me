@@ -5,13 +5,6 @@ branches:
   only:
     - master
 
-cache:
-    directories:
-        - "node_modules"
-
-install:
-  - npm install
-
 before_script:
   - openssl aes-256-cbc -a -d -in key.pem.enc -out key.pem -k $ENC_KEY
 
