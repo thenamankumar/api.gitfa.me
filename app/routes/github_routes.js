@@ -118,16 +118,16 @@ module.exports = function(app, db) {
 									.then((response) => {
 										if (!response)
 											throw new Error("no data");
-				
+
 										let contributors = JSON.parse(response);
-										
+
 										if (contributors.length === 0)
 											return contributors;
-										
+
 										let our_user = contributors.find((item) => {
 											return item['login'] === user_info['login'];
 										});
-										
+
 										// commits by our user
 										if(our_user) {
 											user_info['repos'][i]['commits'] = our_user['contributions'];
@@ -138,7 +138,7 @@ module.exports = function(app, db) {
 										contributors.forEach((item) => {
 											user_info['repos'][i]['all_commits'] += item['contributions'];
 										});
-										
+
 										return fetch_participants(page + 1);
 									})
 									.catch(err => console.log(err));
