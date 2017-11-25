@@ -24,8 +24,37 @@ function get_payload(user_name) {
 				following {
 					totalCount
 				}
-				repositories {
+				repositories(first: 100) {
 					totalCount
+					pageInfo {
+						hasNextPage
+					}
+					edges {
+						node {
+							name
+							... on Repository{
+								stargazers {
+									totalCount
+								}
+								watchers {
+									totalCount
+								}
+								forks {
+									totalCount
+								}
+							}
+							ref(qualifiedName: "master"){
+								target {
+									... on Commit {
+										history {
+											totalCount
+										}
+									}
+								}
+							}
+							isFork
+						}
+					}
 				}
 			}
 		}`
