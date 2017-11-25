@@ -24,15 +24,20 @@ function get_payload(user_name) {
 				following {
 					totalCount
 				}
-				repositories(first: 100) {
+				repositories(first: 100, orderBy: {field: NAME, direction: ASC}) {
 					totalCount
 					pageInfo {
 						hasNextPage
+						endCursor
 					}
 					edges {
 						node {
-							name
-							... on Repository{
+							... on Repository {
+								name
+								isFork
+								owner {
+									login
+								}
 								stargazers {
 									totalCount
 								}
@@ -42,8 +47,31 @@ function get_payload(user_name) {
 								forks {
 									totalCount
 								}
+								parent {
+									owner {
+										login
+									}
+									stargazers {
+										totalCount
+									}
+									watchers {
+										totalCount
+									}
+									forks {
+										totalCount
+									}
+									ref(qualifiedName: "master") {
+										target {
+											... on Commit {
+												history {
+													totalCount
+												}
+											}
+										}
+									}
+								}
 							}
-							ref(qualifiedName: "master"){
+							ref(qualifiedName: "master") {
 								target {
 									... on Commit {
 										history {
@@ -52,7 +80,6 @@ function get_payload(user_name) {
 									}
 								}
 							}
-							isFork
 						}
 					}
 				}
