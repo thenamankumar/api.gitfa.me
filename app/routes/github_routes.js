@@ -13,7 +13,20 @@ function get_payload(user_name) {
 	return {
 		"query": `{
 			user(login: "samkit-jain") {
+				avatarUrl
 				bio
+				login
+				name
+				url
+				followers {
+					totalCount
+				}
+				following {
+					totalCount
+				}
+				repositories {
+					totalCount
+				}
 			}
 		}`
 	}
@@ -37,7 +50,21 @@ module.exports = function(app, db) {
 				throw new Error("Not found");
 			})
 			.then(user_data => {
-				console.log(user_data);
+				let user_info = {
+					'success': true,
+				};
+
+				user_data = user_data['data']['user'];
+				user_info['public_repos'] = user_data['repositories']['totalCount'];
+				user_info['avatar_url'] = user_data['avatar_url'];
+				user_info['followers'] = user_data['followers']['totalCount'];
+				user_info['following'] = user_data['following']['totalCount'];
+				user_info['html_url'] = user_data['url'];
+				user_info['login'] = user_data['login'];
+				user_info['name'] = user_data['name'];
+				user_info['bio'] = user_data['bio'];
+
+				res.json(user_info);
 			})
 			.catch(error => {
 				return res.json({'success': false, 'message': error.message});
