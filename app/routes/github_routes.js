@@ -4,36 +4,12 @@ const fetch = require('node-fetch');
 function get_payload(user_name) {
 	return {
 		"query": `
+			query($username: String!, $showUserData: Boolean!)
 			{
-				user(login: "samkit-jain") {
-					avatarUrl
-					bio
-					login
-					name
-					url
-					followers {
-						totalCount
-					}
-					following {
-						totalCount
-					}
+				user(login: $username) {
+					...userData @include (if: $showUserData)
 					repositories(first: 100, orderBy: {field: NAME,direction: ASC}) {
-						totalCount
-						pageInfo {
-							hasNextPage
-							endCursor
-						}
-						edges {
-							node {
-								... on Repository {
-									isFork
-									parent {
-										... repoStats
-									}
-									... repoStats
-								}
-							}
-						}
+						...repoData
 					}
 				}
 			}
@@ -62,6 +38,45 @@ function get_payload(user_name) {
 						}
 					}
 				}
+			}
+
+			fragment repoData on RepositoryConnection {
+				totalCount
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+				edges {
+					node {
+						... on Repository {
+							isFork
+							parent {
+								...repoStats
+							}
+							...repoStats
+						}
+					}
+				}
+			}
+
+			fragment userData on User {
+				avatarUrl
+				bio
+				login
+				name
+				url
+				followers {
+					totalCount
+				}
+				following {
+					totalCount
+				}
+			}
+		`,
+		"variables": `
+			{
+				"username": "samkit-jain",
+				"showUserData": true
 			}
 		`
 	}
