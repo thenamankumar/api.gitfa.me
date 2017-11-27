@@ -1,14 +1,14 @@
 const fetch = require('node-fetch');
 
 // return GraphQL query
-function get_payload(user_name) {
+function getPayload(username, showUserData, endCursor) {
 	return {
 		"query": `
 			query($username: String!, $showUserData: Boolean!)
 			{
 				user(login: $username) {
 					...userData @include (if: $showUserData)
-					repositories(first: 100, orderBy: {field: NAME,direction: ASC}) {
+					repositories(first: 100,` + (endCursor != null ? ` after: "` + endCursor + `",` : ``) + ` orderBy: {field: NAME,direction: ASC}) {
 						...repoData
 					}
 				}
@@ -75,8 +75,8 @@ function get_payload(user_name) {
 		`,
 		"variables": `
 			{
-				"username": "samkit-jain",
-				"showUserData": true
+				"username": "` + username + `",
+				"showUserData": ` + showUserData + `
 			}
 		`
 	}
@@ -87,7 +87,7 @@ module.exports = function(app, db) {
 		// get basic user information
 		fetch('https://api.github.com/graphql', {
 			method: 'POST',
-			body: JSON.stringify(get_payload(req.params.name)),
+			body: JSON.stringify(getPayload(req.params.name, true, null)),
 			headers: {
 				'Authorization': 'bearer ' + process.env.GITHUBKEY,
 				'Content-Type': 'application/json'
@@ -98,44 +98,120 @@ module.exports = function(app, db) {
 
 				throw new Error('error');
 			})
-			.then(user_data => {
-				let user_info = {
+			.then(userData => {
+				let userInfo = {
 					'success': true,
 				};
 
-				user_data = user_data['data']['user'];
-				user_info['public_repos'] = user_data['repositories']['totalCount'];
-				user_info['avatar_url'] = user_data['avatar_url'];
-				user_info['followers'] = user_data['followers']['totalCount'];
-				user_info['following'] = user_data['following']['totalCount'];
-				user_info['html_url'] = user_data['url'];
-				user_info['login'] = user_data['login'];
-				user_info['name'] = user_data['name'];
-				user_info['bio'] = user_data['bio'];
+				userData = userData['data']['user'];
+				userInfo['public_repos'] = userData['repositories']['totalCount'];
+				userInfo['avatar_url'] = userData['avatar_url'];
+				userInfo['followers'] = userData['followers']['totalCount'];
+				userInfo['following'] = userData['following']['totalCount'];
+				userInfo['html_url'] = userData['url'];
+				userInfo['login'] = userData['login'];
+				userInfo['name'] = userData['name'];
+				userInfo['bio'] = userData['bio'];
 
-				user_info['repos'] = [];
+				userInfo['repos'] = [];
 
-				user_data['repositories']['edges'].forEach((repo_node) => {
-					repo_node = repo_node['node'];
+				userData['repositories']['edges'].forEach((repoNode) => {
+					repoNode = repoNode['node'];
 
-					if(repo_node['isFork'])	repo_node = repo_node['parent'];
+					if(repoNode['isFork'])	repoNode = repoNode['parent'];
 
-					user_info['repos'].push({
-						'full_name': repo_node['nameWithOwner'],
-						'stargazers_count': repo_node['stargazers']['totalCount'],
-						'watchers_count': repo_node['watchers']['totalCount'],
-						'owner_login': repo_node['owner']['login'],
-						'forks_count': repo_node['forks']['totalCount'],
-						'html_url': repo_node['url'],
-						'all_commits': repo_node['ref']['target']['history']['totalCount'],
-						'commits': repo_node['nameWithOwner'],
+					userInfo['repos'].push({
+						'full_name': repoNode['nameWithOwner'],
+						'stargazers_count': repoNode['stargazers']['totalCount'],
+						'watchers_count': repoNode['watchers']['totalCount'],
+						'owner_login': repoNode['owner']['login'],
+						'forks_count': repoNode['forks']['totalCount'],
+						'html_url': repoNode['url'],
+						'all_commits': repoNode['ref']['target']['history']['totalCount'],
+						'commits': repoNode['nameWithOwner'],
 					});
-				})
+				});
 
-				res.json(user_info);
+				let contributionPromises = [];
+				
+				if(userData['repositories']['pageInfo']['hasNextPage']) {
+					contributionPromises.push(traverseAllCursors(userData['repositories']['pageInfo']['endCursor']));
+
+					function traverseAllCursors(endCursor) {
+						return fetch('https://api.github.com/graphql', {
+							method: 'POST',
+							body: JSON.stringify(getPayload(req.params.name, false, endCursor)),
+							headers: {
+								'Authorization': 'bearer ' + process.env.GITHUBKEY,
+								'Content-Type': 'application/json'
+							}
+						})
+							.then(response => {
+								if(response.ok) return response.json();
+
+								throw new Error('error');
+							})
+							.then(userData => {
+								userData = userData['data']['user'];
+
+								userData['repositories']['edges'].forEach((repoNode) => {
+									repoNode = repoNode['node'];
+
+									if(repoNode['isFork'])	repoNode = repoNode['parent'];
+
+									userInfo['repos'].push({
+										'full_name': repoNode['nameWithOwner'],
+										'stargazers_count': repoNode['stargazers']['totalCount'],
+										'watchers_count': repoNode['watchers']['totalCount'],
+										'owner_login': repoNode['owner']['login'],
+										'forks_count': repoNode['forks']['totalCount'],
+										'html_url': repoNode['url'],
+										'all_commits': repoNode['ref']['target']['history']['totalCount'],
+										'commits': repoNode['nameWithOwner'],
+									});
+								});
+
+								if(userData['repositories']['pageInfo']['hasNextPage']) return traverseAllCursors(userData['repositories']['pageInfo']['endCursor']);
+								
+								return userInfo;
+							})
+							.catch(error => console.log(error.message))
+					}
+
+					return Promise.all(contributionPromises);
+				}
+				else {
+					return userInfo;
+				}
+			})
+			.then(userInfo => {
+				if(Array.isArray(userInfo)) {
+					res.json(userInfo[0]);
+				}
+				else {
+					res.json(userInfo);
+				}
 			})
 			.catch(error => {
 				return res.json({'success': false, 'message': error.message});
 			});
 	});
 };
+
+/*
+
+SHOULD ALSO RETURN GRAPHQL ERROR RESPONSE
+{ data: null,
+  errors: 
+   [ { message: 'Argument \'after\' on Field \'repositories\' has an invalid value. Expected type \'String\'.',
+       locations: [Array] } ] }
+usercommit: history(author: {id: "MDQ6VXNlcjE1MTI3MTE1"}, first: 50) {
+          totalCount
+          nodes {
+            commitUrl
+            author {
+              name
+            }
+          }
+        }
+  */
