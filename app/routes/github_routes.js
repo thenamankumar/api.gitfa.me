@@ -104,22 +104,29 @@ module.exports = function(app, db) {
 					'success': true,
 				};
 
+				if(userData['data'] === null) throw new Error(userData['errors'][0]['message']);
+				if(userData['data']['user'] === null) throw new Error('Not found');
+
 				userData = userData['data']['user'];
 				userInfo['public_repos'] = userData['repositories']['totalCount'];
-				userInfo['avatar_url'] = userData['avatar_url'];
+				userInfo['avatar_url'] = userData['avatarUrl'];
 				userInfo['followers'] = userData['followers']['totalCount'];
 				userInfo['following'] = userData['following']['totalCount'];
 				userInfo['html_url'] = userData['url'];
 				userInfo['login'] = userData['login'];
 				userInfo['name'] = userData['name'];
 				userInfo['bio'] = userData['bio'];
+				userInfo['commits'] = 0;
+				userInfo['stars'] = 0;
+				userInfo['forks'] = 0;
 
 				userInfo['repos'] = [];
 
-				userData['repositories']['edges'].forEach((repoNode) => {
-					repoNode = repoNode['node'];
+				// avoid forEach. It's slooower. REF -> https://jsperf.com/fast-array-foreach
+				for(let i = 0; i < userData['repositories']['edges'].length; i++) {
+					repoNode = userData['repositories']['edges'][i]['node'];
 
-					if(repoNode['isFork'])	repoNode = repoNode['parent'];
+					if(repoNode['isFork']) repoNode = repoNode['parent'];
 
 					userInfo['repos'].push({
 						'full_name': repoNode['nameWithOwner'],
@@ -129,9 +136,9 @@ module.exports = function(app, db) {
 						'forks_count': repoNode['forks']['totalCount'],
 						'html_url': repoNode['url'],
 						'all_commits': repoNode['ref']['target']['history']['totalCount'],
-						'commits': repoNode['nameWithOwner'],
+						'commits': 0,
 					});
-				});
+				}
 
 				let contributionPromises = [];
 				
@@ -155,10 +162,10 @@ module.exports = function(app, db) {
 							.then(userData => {
 								userData = userData['data']['user'];
 
-								userData['repositories']['edges'].forEach((repoNode) => {
-									repoNode = repoNode['node'];
+								for(let i = 0; i < userData['repositories']['edges'].length; i++) {
+									repoNode = userData['repositories']['edges'][i]['node'];
 
-									if(repoNode['isFork'])	repoNode = repoNode['parent'];
+									if(repoNode['isFork']) repoNode = repoNode['parent'];
 
 									userInfo['repos'].push({
 										'full_name': repoNode['nameWithOwner'],
@@ -168,9 +175,9 @@ module.exports = function(app, db) {
 										'forks_count': repoNode['forks']['totalCount'],
 										'html_url': repoNode['url'],
 										'all_commits': repoNode['ref']['target']['history']['totalCount'],
-										'commits': repoNode['nameWithOwner'],
+										'commits': 0,
 									});
-								});
+								}
 
 								if(userData['repositories']['pageInfo']['hasNextPage']) return traverseAllCursors(userData['repositories']['pageInfo']['endCursor']);
 								
@@ -182,37 +189,79 @@ module.exports = function(app, db) {
 					return Promise.all(contributionPromises);
 				}
 				else {
-					return userInfo;
+					return [userInfo];
 				}
 			})
 			.then(userInfo => {
-				if(Array.isArray(userInfo)) {
-					res.json(userInfo[0]);
+				userInfo = userInfo[0];
+				let participationPromises = [];
+
+				
+				for(let i = 0; i < userInfo['repos'].length; i++) {
+					// counting number of forks and stars
+					if(userInfo['login'] === userInfo['repos'][i]['owner_login']) {
+						userInfo['stars'] += userInfo['repos'][i]['stargazers_count'];
+						userInfo['forks'] += userInfo['repos'][i]['forks_count'];
+					}
+
+					participationPromises.push(fetchParticipants(1));
+
+					function fetchParticipants(page) {
+						return fetch("http://api.github.com/repos/" + userInfo['repos'][i]['full_name'] + "/contributors?client_id=306bffb6acf1e4b78303&client_secret=64f16f44d1346f04b72e6c9cb3f60e727b400c88&anon=1&per_page=100&page=" + page)
+							.then((response) => {
+								if (response.ok)
+									return response.text();
+								else
+									throw new Error("Error!");
+							})
+							.then((response) => {
+								if (!response)
+									throw new Error("no data");
+		
+								let contributors = JSON.parse(response);
+								
+								if (contributors.length === 0)
+									return contributors;
+								
+								let our_user = contributors.find((item) => {
+									return item['login'] === userInfo['login'];
+								});
+								
+								// commits by our user
+								if(our_user) {
+									userInfo['repos'][i]['commits'] = our_user['contributions'];
+									userInfo['commits'] += userInfo['repos'][i]['commits'];
+
+									return userInfo;
+								}
+								
+								return fetchParticipants(page + 1);
+							})
+							.catch(err => console.log(err));
+					}
 				}
-				else {
-					res.json(userInfo);
-				}
+
+				return Promise.all(participationPromises);
+			})
+			.then((userInfo) => {
+				userInfo = userInfo[0];
+
+				// sorting the repositories based on commits count
+				userInfo['repos'].sort((l, r) => {
+					if(l['commits'] < r['commits'])
+						return 1;
+					else if(l['commits'] === r['commits']) {
+						if (l['all_commits'] < r['all_commits'])
+							return 1;
+						else return -1;
+					}
+					else return -1;
+				});
+
+				return res.json(userInfo);
 			})
 			.catch(error => {
 				return res.json({'success': false, 'message': error.message});
 			});
 	});
 };
-
-/*
-
-SHOULD ALSO RETURN GRAPHQL ERROR RESPONSE
-{ data: null,
-  errors: 
-   [ { message: 'Argument \'after\' on Field \'repositories\' has an invalid value. Expected type \'String\'.',
-       locations: [Array] } ] }
-usercommit: history(author: {id: "MDQ6VXNlcjE1MTI3MTE1"}, first: 50) {
-          totalCount
-          nodes {
-            commitUrl
-            author {
-              name
-            }
-          }
-        }
-  */
