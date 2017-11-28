@@ -4,11 +4,11 @@ const fetch = require('node-fetch');
 function getPayload(username, showUserData, endCursor) {
 	return {
 		"query": `
-			query($username: String!, $showUserData: Boolean!)
+			query($username: String!, $showUserData: Boolean!, $afterCursor: String)
 			{
 				user(login: $username) {
 					...userData @include (if: $showUserData)
-					repositories(first: 100,` + (endCursor != null ? ` after: "` + endCursor + `",` : ``) + ` orderBy: {field: NAME,direction: ASC}) {
+					repositories(first: 100, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
 						...repoData
 					}
 				}
@@ -76,7 +76,8 @@ function getPayload(username, showUserData, endCursor) {
 		"variables": `
 			{
 				"username": "` + username + `",
-				"showUserData": ` + showUserData + `
+				"showUserData": ` + showUserData + `,
+				"afterCursor": ` + (endCursor != null ? `"` + endCursor + `"` : `null`) + `
 			}
 		`
 	}
