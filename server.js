@@ -17,6 +17,4 @@ app.listen(port, () => {
 });
 
 // on error 404
-app.use(function(req, res) {
-	res.status(404).json({url: req.originalUrl + ' not found'})
-});
+app.use((req, res) => res.status(404).json({url: req.originalUrl + ' not found'}));
