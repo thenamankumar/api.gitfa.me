@@ -4,6 +4,7 @@
 
 const express = require('express');
 const body_parser = require('body-parser');
+require('dotenv').config();
 
 const app = express();
 
@@ -12,7 +13,7 @@ const port = 3000;
 app.use(body_parser.urlencoded({extended: true}));
 
 require('./app/routes')(app, {});
-app.listen(port, () => {
+app.listen(port,process.env.ADDRESS,  () => {
 	console.log('Running on ' + port);
 });
 

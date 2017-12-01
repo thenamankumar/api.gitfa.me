@@ -264,7 +264,10 @@ module.exports = function (app, db) {
           return -1;
         });
         userInfo['time'] = new Date();
-        return res.json(userInfo);
+        return userInfo;
+      })
+      .then((finalData) => {
+        return res.json(finalData);
       })
       .catch(error => {
         return res.json({'success': false, 'message': error.message});
