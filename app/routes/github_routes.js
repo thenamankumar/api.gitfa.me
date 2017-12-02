@@ -24,8 +24,9 @@ function userPayload(username) {
 				following {
 					totalCount
 				}
-				repositories: contributedRepositories {
-				totalCount}
+				repositories {
+				  totalCount
+				}
 			}
 		`,
     "variables": `
@@ -42,7 +43,7 @@ function reposPayload(username, id, endCursor) {
 			query($username: String!, $id: ID!, $afterCursor: String)
 			{
 				user(login: $username) {
-					repositories: contributedRepositories(first: 100, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
+					repositories(first: 100, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
 						...repoData
 					}
 				}
@@ -94,6 +95,10 @@ function reposPayload(username, id, endCursor) {
 				}
 				nodes {
 					... on Repository {
+						isFork
+					  parent {
+ 							...repoStats
+ 						}
 						...repoStats
 					}
 				}
@@ -178,17 +183,21 @@ module.exports = function (app, db) {
               let repos = [];
               for (let i = 0; i < userData['repositories']['nodes'].length; i++) {
                 let repoNode = userData['repositories']['nodes'][i];
-                let userCommits = repoNode['contributions']['target']['userCommits']['totalCount'];
+                if (repoNode['isFork']) repoNode = repoNode['parent'];
+
+                // contributions null for empty repos
+                let userCommits = repoNode['contributions'] ? repoNode['contributions']['target']['userCommits']['totalCount'] : 0;
+                let totalCommits = repoNode['contributions'] ? repoNode['contributions']['target']['totalCommits']['totalCount'] : 0;
 
                 repos.push({
                   'full_name': repoNode['nameWithOwner'],
-                  'branch': repoNode['branch']['name'],
+                  'branch': repoNode['branch'] ? repoNode['branch']['name'] : "", // branch null for empty repos
                   'stars': repoNode['stargazers']['totalCount'],
                   'watchers': repoNode['watchers']['totalCount'],
                   'forks': repoNode['forks']['totalCount'],
                   'url': repoNode['url'],
                   'languages': repoNode['languages']['nodes'],
-                  'total_commits': repoNode['contributions']['target']['totalCommits']['totalCount'],
+                  'total_commits': totalCommits,
                   'user_commits': userCommits,
                 });
 
