@@ -8,7 +8,11 @@ Run mongodb `sudo service mongodb start`
 
 To run `node server.js`
 
-`GET <url>/users/<username>`
+`POST <url>/`
+
+Parameters:
+  name: String
+  latest: boolean
 
 Response:
 ```json
