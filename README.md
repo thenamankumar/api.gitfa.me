@@ -2,9 +2,17 @@
 
 Uses GitHub GraphQL API v4.
 
+Install mongodb `sudo apt install mongodb-server`
+
+Run mongodb `sudo service mongodb start`
+
 To run `node server.js`
 
-`GET <url>/users/<username>`
+`POST <url>/`
+
+Parameters:
+  name: String
+  latest: boolean
 
 Response:
 ```json

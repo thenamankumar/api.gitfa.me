@@ -24,6 +24,7 @@
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "express": "^4.16.2",
+    "mongodb": "^2.2.33",
     "node-fetch": "^1.7.3"
   }
 }
