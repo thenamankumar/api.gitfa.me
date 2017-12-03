@@ -276,6 +276,17 @@ module.exports = function (app, db) {
         return userInfo;
       })
       .then((finalData) => {
+        // save to db
+        finalData['_id'] = finalData['login'];
+        
+        db.collection('stats').insert(finalData, (err, result) => {
+          if (err) {
+            console.log('could not save to DB. Error - ' + err.message); 
+          } else {
+            console.log('saved. ID: ' + result.ops[0]['_id']);
+          }
+        });
+
         return res.json(finalData);
       })
       .catch(error => {
