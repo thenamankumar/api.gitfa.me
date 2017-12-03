@@ -281,7 +281,7 @@ module.exports = function (app, db) {
 
     db.collection('stats').findOne(idDict, (err, item) => {
       if(err) {
-        console.log('Find failed. Error - ' + err.message);
+        return res.json({'success': false, 'message': err.message});
       }
 
       if(item === null) {
