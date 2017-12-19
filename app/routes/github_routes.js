@@ -263,13 +263,26 @@ function fetchData(req, res) {
         return -1;
       });
 
-      // sort languages for maximum product of commits*repos
+      // sort languages for maximum commits
       userInfo['languages'].sort((l, r) => {
-        if (l['commits'] * l['repos'] <= r['commits'] * r['repos']) {
+        if (l['commits'] <= r['commits']) {
           return 1;
         }
         return -1;
       });
+
+      total_language_sum = 0.0;
+
+      // getting total number of commits for all languages
+      for(let i = 0; i < userInfo['languages'].length; i++) {
+        total_language_sum += userInfo['languages'][i]['commits'];
+      }
+
+      // normalizing score
+      for(let i = 0; i < userInfo['languages'].length; i++) {
+        userInfo['languages'][i]['commits'] = (userInfo['languages'][i]['commits'] * 100.0) / total_language_sum;
+      }
+
       userInfo['time'] = new Date();
       return userInfo;
     })
@@ -282,7 +295,7 @@ module.exports = function (app, db) {
     } else {
       const idDict = {'_id': req.body.name};
 
-      if(req.body.latest === true) {
+      if(req.body.latest === true || req.body.latest == 'true') {
         // if 24 hours passed
         // get new data and save
         // else return whatever's in DB
@@ -312,7 +325,6 @@ module.exports = function (app, db) {
               });
           } else {
             // id present in DB
-
             var staDate = new Date(item['time']); // time when entry was saved
             var curDate = new Date();  // current time
 
