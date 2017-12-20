@@ -27,6 +27,7 @@ Response:
     "login": "samkit-jain",
     "name": "Samkit Jain",
     "bio": "Developer.",
+    "createdAt": "2015-10-14T15:17:26Z",
     "commits": 2172,
     "stars": 6,
     "forks": 0,

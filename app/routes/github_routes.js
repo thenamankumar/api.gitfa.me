@@ -16,6 +16,7 @@ function userPayload(username) {
 			  login
 			  name
 			  bio
+        createdAt
 				avatarUrl
 				url
 				followers {
@@ -146,6 +147,7 @@ function fetchData(req, res) {
       userInfo['login'] = userData['login'];
       userInfo['name'] = userData['name'];
       userInfo['bio'] = userData['bio'];
+      userInfo['createdAt'] = userData['createdAt'];
       userInfo['commits'] = 0;
       userInfo['stars'] = 0;
       userInfo['forks'] = 0;
