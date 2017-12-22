@@ -1,15 +1,13 @@
-// To enable HTTPS: see https://stackoverflow.com/questions/11744975/enabling-https-on-express-js?rq=1
-
-// For HTTP
-
 const express = require('express');
 const body_parser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const db = require('./config/db');
+const cors = require('cors');
 
 require('dotenv').config();
 
 const app = express();
+app.use(cors());
 
 const port = 3000;
 
@@ -28,6 +26,6 @@ MongoClient.connect(db.url, (err, database) => {
   });
 
   // on error 404
-  app.use((req, res) => res.status(404).json({url: req.originalUrl + ' not found'}));
+  app.use((req, res) => res.status(404).json({url: req.originalUrl + 'This is not the correct way to use the API.'}));
 
 });

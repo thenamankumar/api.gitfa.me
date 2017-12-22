@@ -1,6 +1,6 @@
-const github_routes = require('./github_routes');
+const root = require('./root');
 
-module.exports = function(app, db) {
+module.exports = (app, db) => {
   // mention all routes here
-  github_routes(app, db);
+  root(app, db);
 }

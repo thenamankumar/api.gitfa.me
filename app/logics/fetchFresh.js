@@ -1,124 +1,14 @@
-const fetch = require('node-fetch');
 require('dotenv').config();
 
-function userPayload(username) {
-  return {
-    'query': `
-    	query($username: String!)
-    	{
-				user(login: $username) {
-					...userData
-				}
-			}
-			
-			fragment userData on User {
-			  id
-			  login
-			  name
-			  bio
-        createdAt
-				avatarUrl
-				url
-				followers {
-					totalCount
-				}
-				following {
-					totalCount
-				}
-				repositories {
-				  totalCount
-				}
-			}
-		`,
-    "variables": `
-			{
-				"username": "` + username + `"
-			}
-		`
-  }
-}
+const fetch = require('node-fetch');
+const userPayload = require('./payload').userPayload;
+const reposPayload = require('./payload').reposPayload;
 
-function reposPayload(username, id, endCursor) {
-  return {
-    "query": `
-			query($username: String!, $id: ID!, $afterCursor: String)
-			{
-				user(login: $username) {
-					repositories(first: 100, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
-						...repoData
-					}
-				}
-			}
-
-			fragment repoStats on Repository {
-				nameWithOwner
-				url
-				owner {
-					login
-				}
-				stargazers {
-					totalCount
-				}
-				watchers {
-					totalCount
-				}
-				forks {
-					totalCount
-				}
-				branch: defaultBranchRef {
-				  name
-				}
-				languages(first: 100){
-          nodes{
-            name
-            color
-          }
-        }
-				contributions: defaultBranchRef {
-					target {
-						... on Commit {
-							userCommits: history(author: {id: $id}) {
-								totalCount
-							}
-							totalCommits: history {
-								totalCount
-							}
-						}
-					}
-				}
-			}
-
-			fragment repoData on RepositoryConnection {
-				totalCount
-				pageInfo {
-					hasNextPage
-					endCursor
-				}
-				nodes {
-					... on Repository {
-						isFork
-					  parent {
- 							...repoStats
- 						}
-						...repoStats
-					}
-				}
-			}
-		`,
-    "variables": `
-			{
-				"username": "` + username + `",
-				"id": "` + id + `",
-				"afterCursor": ` + (endCursor !== null ? `"` + endCursor + `"` : `null`) + `
-			}
-		`
-  }
-}
-
-function fetchData(req, res) {
+const fetchFresh = (username) => {
+  console.log('Fetching fresh data:', '\'' + username + '\'');
   return fetch('https://api.github.com/graphql', {
     method: 'POST',
-    body: JSON.stringify(userPayload(req.body.name, true, null)),
+    body: JSON.stringify(userPayload(username, true, null)),
     headers: {
       'Authorization': 'bearer ' + process.env.GIT_TOKEN,
       'Content-Type': 'application/json'
@@ -135,7 +25,10 @@ function fetchData(req, res) {
       };
 
       if (userData['data'] === null) throw new Error(userData['errors'][0]['message']);
-      if (userData['data']['user'] === null) throw new Error('Not found');
+      if (userData['data']['user'] === null) {
+        console.log('\'' + username + '\'', 'do not exist');
+        throw new Error('User not found')
+      };
 
       userData = userData['data']['user'];
       userInfo['public_repos'] = userData['repositories']['totalCount'];
@@ -165,7 +58,7 @@ function fetchData(req, res) {
       function traverseAllCursors(endCursor) {
         return fetch('https://api.github.com/graphql', {
           method: 'POST',
-          body: JSON.stringify(reposPayload(userInfo['login'], userInfo['id'], endCursor)),
+          body: JSON.stringify(reposPayload(username, userInfo['id'], endCursor)),
           headers: {
             'Authorization': 'bearer ' + process.env.GIT_TOKEN,
             'Content-Type': 'application/json'
@@ -273,7 +166,7 @@ function fetchData(req, res) {
         return -1;
       });
 
-      total_language_sum = 0.0;
+      let total_language_sum = 0.0;
 
       // getting total number of commits for all languages
       for(let i = 0; i < userInfo['languages'].length; i++) {
@@ -286,112 +179,11 @@ function fetchData(req, res) {
       }
 
       userInfo['time'] = new Date();
+      userInfo['fresh'] = true;
+
+      console.log('Fresh data fetched:', '\'' + username + '\'', 'at', userInfo['time']);
       return userInfo;
     })
-}
-
-module.exports = function (app, db) {
-  app.post('/', (req, res) => {
-    if(req.body.name === undefined || req.body.name === null || req.body.latest === undefined || req.body.latest === null) {
-      return res.json({'success': false, 'message': 'parameters missing'});
-    } else {
-      const idDict = {'_id': req.body.name};
-
-      if(req.body.latest === true || req.body.latest == 'true') {
-        // if 24 hours passed
-        // get new data and save
-        // else return whatever's in DB
-
-        db.collection('stats').findOne(idDict, (err, item) => {
-          if(err) {
-            return res.json({'success': false, 'message': err.message});
-          } else if(item === null) {
-            // ID not present in DB
-            fetchData(req, res)
-              .then((finalData) => {
-                // save to db
-                finalData['_id'] = finalData['login'];
-
-                db.collection('stats').insert(finalData, (err, result) => {
-                  if (err) {
-                    console.log('Insert failed. Error - ' + err.message); 
-                  } else {
-                    console.log('Inserted. ID: ' + result.ops[0]['_id']);
-                  }
-                });
-
-                return res.json(finalData);
-              })
-              .catch(error => {
-                return res.json({'success': false, 'message': error.message});
-              });
-          } else {
-            // id present in DB
-            var staDate = new Date(item['time']); // time when entry was saved
-            var curDate = new Date();  // current time
-
-            if((curDate.getTime() - staDate.getTime()) > 86400000) {
-              // more than 24 hours old data
-              // get new data and update
-
-              fetchData(req, res)
-                .then((finalData) => {
-                  // update to db
-                  finalData['_id'] = finalData['login'];
-
-                  db.collection('stats').update(idDict, finalData, (err, result) => {
-                    if (err) {
-                      console.log('Update failed. Error - ' + err.message); 
-                    } else {
-                      console.log('Updated. ID: ' + finalData['_id']);
-                    }
-                  });
-
-                  return res.json(finalData);
-                })
-                .catch(error => {
-                  return res.json({'success': false, 'message': error.message});
-                });
-            } else {
-              // data is fresh
-              return res.json(item);
-            }
-          }
-        });
-      } else {
-        // return whatever's in db
-        // if nothing in db then get from GitHub and save
-
-        db.collection('stats').findOne(idDict, (err, item) => {
-          if(err) {
-            return res.json({'success': false, 'message': err.message});
-          } else if(item === null) {
-            // ID not present in DB
-            fetchData(req, res)
-              .then((finalData) => {
-                // save to db
-                finalData['_id'] = finalData['login'];
-
-                db.collection('stats').insert(finalData, (err, result) => {
-                  if (err) {
-                    console.log('Insert failed. Error - ' + err.message); 
-                  } else {
-                    console.log('Inserted. ID: ' + result.ops[0]['_id']);
-                  }
-                });
-
-                return res.json(finalData);
-              })
-              .catch(error => {
-                return res.json({'success': false, 'message': error.message});
-              });
-          } else {
-            // id present in DB
-
-            return res.json(item);
-          }
-        });
-      }
-    }
-  });
 };
+
+module.exports = fetchFresh;
