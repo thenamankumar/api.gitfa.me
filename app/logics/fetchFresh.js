@@ -30,6 +30,8 @@ const fetchFresh = (username) => {
         throw new Error('User not found')
       };
 
+      console.log('User data fetched. Points remaining:', userData['data']['rateLimit']['remaining']);
+
       userData = userData['data']['user'];
       userInfo['public_repos'] = userData['repositories']['totalCount'];
       userInfo['avatar_url'] = userData['avatarUrl'];
@@ -70,6 +72,8 @@ const fetchFresh = (username) => {
             throw new Error('error');
           })
           .then(userData => {
+            console.log('Repo data fetched. Points remaining:', userData['data']['rateLimit']['remaining']);
+
             if (userData['data'] === null) throw new Error(userData['errors'][0]['message']);
 
             userData = userData['data']['user'];
