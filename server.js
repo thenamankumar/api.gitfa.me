@@ -20,8 +20,7 @@ winston.loggers.add('debug_logs', {
   console: {
     level: 'debug',
     colorize: true,
-    label: 'debug logs',
-    timestamp: tsFormat,
+    timestamp: false,
     prettyPrint: true
   },
   file: {
@@ -39,7 +38,7 @@ winston.loggers.add('error_logs', {
     level: 'error',
     colorize: true,
     label: 'error logs',
-    timestamp: tsFormat,
+    timestamp: false,
     prettyPrint: true
   },
   file: {
@@ -76,7 +75,6 @@ MongoClient.connect(db.url, (err, database) => {
 
   app.listen(port, process.env.ADDRESS, () => {
     debug_logs.info('Running on ' + port);
-    console.log('Running on ' + port);
   });
 
   // on error 404

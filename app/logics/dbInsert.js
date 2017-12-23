@@ -15,10 +15,8 @@ const dbInsert = (db, username) => {
       db.collection('stats').insert(finalData, (err, result) => {
         if (err) {
           error_logs.error('DB insert failed: \'' + finalData['_id'] + '\' Error: ' + err.message);
-          console.log('DB insert failed:', '\'' + finalData['_id'] + '\'', 'Error:', err.message);
         } else {
           debug_logs.info('DB insert: \'' + result.ops[0]['_id'] + '\'');
-          console.log('DB insert:', '\'' + result.ops[0]['_id'] + '\'');
         }
       });
       return finalData;

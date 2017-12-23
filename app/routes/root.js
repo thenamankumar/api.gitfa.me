@@ -10,7 +10,6 @@ const error_logs = winston.loggers.get('error_logs');
 module.exports = function (app, db) {
   app.post('/', (req, res) => {
     debug_logs.verbose('Request: %j', req.body);
-    console.log('Request:', req.body);
 
     if (!req.body.name) {
       error_logs.error('This is not the correct way to use the API.');
@@ -28,14 +27,12 @@ module.exports = function (app, db) {
           // ID not present in DB
           dbInsert(db, req.body.name)
             .then((finalData) => {
-              debug_logs.verbose('Response: %j', {name: finalData['login'], fresh: finalData['fresh']})
-              console.log('Response:', {name: finalData['login'], fresh: finalData['fresh']});
+              debug_logs.verbose('Response: %j', {name: finalData['login'], fresh: finalData['fresh']});
               return res.json(finalData);
             })
             .catch(error => {
               error_logs.error(error.message);
               const response = {'success': false, 'message': error.message};
-              console.log('Response:', response);
               return res.json(response);
             });
         }
@@ -47,21 +44,19 @@ module.exports = function (app, db) {
           if ((now.getTime() - lastFetch.getTime()) > 86400000 && (req.fresh === true || req.fresh == 'true')) {
             dbUpdate(db, req.body.name, item)
               .then((finalData) => {
-                debug_logs.verbose('Response:%j', {name: finalData['login'], fresh: finalData['fresh']});
-                console.log('Response:', {name: finalData['login'], fresh: finalData['fresh']});
+                debug_logs.verbose('Response: %j', {name: finalData['login'], fresh: finalData['fresh']});
                 return req.json(finalData);
               })
               .catch(error => {
+                error_logs.error(error.message);
                 const response = {'success': false, 'message': error.message};
-                console.log('Response:', response);
                 return res.json(response);
               });
           }
           else {
             // send what is in DB
             item['fresh'] = false;
-            debug_logs.verbose('Response:%j', {name: item['login'], fresh: item['fresh']})
-            console.log('Response:', {name: item['login'], fresh: item['fresh']});
+            debug_logs.verbose('Response: %j', {name: item['login'], fresh: item['fresh']});
             return res.json(item);
           }
         }

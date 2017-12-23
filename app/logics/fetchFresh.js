@@ -35,13 +35,11 @@ const fetchFresh = (username) => {
       if (userData['data'] === null) throw new Error(userData['errors'][0]['message']);
       if (userData['data']['user'] === null) {
         error_logs.error('\'' + username + '\' do not exist');
-        console.log('\'' + username + '\'', 'do not exist');
 
         throw new Error('User not found')
-      };
+      }
 
       debug_logs.debug('User data fetched. Points remaining: ' + userData['data']['rateLimit']['remaining']);
-      console.log('User data fetched. Points remaining:', userData['data']['rateLimit']['remaining']);
 
       userData = userData['data']['user'];
       userInfo['public_repos'] = userData['repositories']['totalCount'];
@@ -85,7 +83,6 @@ const fetchFresh = (username) => {
           })
           .then(userData => {
             debug_logs.debug('Repo data fetched. Points remaining: ' + userData['data']['rateLimit']['remaining']);
-            console.log('Repo data fetched. Points remaining:', userData['data']['rateLimit']['remaining']);
 
             if (userData['data'] === null) {
               error_logs.error(userData['errors'][0]['message']);
@@ -202,7 +199,6 @@ const fetchFresh = (username) => {
       userInfo['fresh'] = true;
 
       debug_logs.info('Fresh data fetched: \'' + username + '\' at ' + userInfo['time']);
-      console.log('Fresh data fetched:', '\'' + username + '\'', 'at', userInfo['time']);
       return userInfo;
     })
 };

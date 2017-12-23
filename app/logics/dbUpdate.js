@@ -17,10 +17,8 @@ const dbUpdate = (db, username, item) => {
         db.collection('stats').update(idDict, finalData, (err, result) => {
           if (err) {
             error_logs.error('DB update failed: \'' + finalData['_id'] + '\' Error: ' + err.message);
-            console.log('DB update failed:', '\'' + finalData['_id'] + '\'', 'Error:', err.message);
           } else {
             debug_logs.info('DB update: \'' + finalData['_id'] + '\'');
-            console.log('DB update:', '\'' + finalData['_id'] + '\'');
           }
         });
 
