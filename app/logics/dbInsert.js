@@ -10,7 +10,7 @@ const dbInsert = (db, username) => {
   return fetchFresh(username)
     .then((finalData) => {
       // save to db
-      finalData['_id'] = finalData['login'];
+      finalData['_id'] = finalData['login'].toLowerCase();
 
       db.collection('stats').insert(finalData, (err, result) => {
         if (err) {

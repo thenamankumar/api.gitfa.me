@@ -16,6 +16,8 @@ module.exports = function (app, db) {
       return res.json({'success': false, 'message': 'This is not the correct way to use the API.'});
     }
     else {
+      req.body.name = req.body.name.toLowerCase();
+      
       const idDict = {'_id': req.body.name};
 
       db.collection('stats').findOne(idDict, (err, item) => {
@@ -27,7 +29,7 @@ module.exports = function (app, db) {
           // ID not present in DB
           dbInsert(db, req.body.name)
             .then((finalData) => {
-              debug_logs.verbose('Response: %j', {name: finalData['login'], fresh: finalData['fresh']});
+              debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
               return res.json(finalData);
             })
             .catch(error => {
@@ -41,11 +43,11 @@ module.exports = function (app, db) {
           let lastFetch = new Date(item['time']);
           let now = new Date();
 
-          if ((now.getTime() - lastFetch.getTime()) > 86400000 && (req.fresh === true || req.fresh == 'true')) {
+          if ((now.getTime() - lastFetch.getTime()) > 86400000 && (req.body.fresh === true || req.body.fresh == 'true')) {
             dbUpdate(db, req.body.name, item)
               .then((finalData) => {
-                debug_logs.verbose('Response: %j', {name: finalData['login'], fresh: finalData['fresh']});
-                return req.json(finalData);
+                debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
+                return res.json(finalData);
               })
               .catch(error => {
                 error_logs.error(error.message);
@@ -56,7 +58,7 @@ module.exports = function (app, db) {
           else {
             // send what is in DB
             item['fresh'] = false;
-            debug_logs.verbose('Response: %j', {name: item['login'], fresh: item['fresh']});
+            debug_logs.verbose('Response: %j', {name: req.body.name, fresh: item['fresh']});
             return res.json(item);
           }
         }
