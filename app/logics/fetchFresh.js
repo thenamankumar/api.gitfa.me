@@ -163,38 +163,6 @@ const fetchFresh = (username) => {
         });
     })
     .then((userInfo) => {
-      // sort repositories for most commits and
-      userInfo['repos'].sort((l, r) => {
-        if (l['user_commits'] < r['user_commits'])
-          return 1;
-        else if (l['user_commits'] === r['user_commits']) {
-          if (l['total_commits'] < r['total_commits'])
-            return 1;
-          return -1;
-        }
-        return -1;
-      });
-
-      // sort languages for maximum commits
-      userInfo['languages'].sort((l, r) => {
-        if (l['commits'] <= r['commits']) {
-          return 1;
-        }
-        return -1;
-      });
-
-      let total_language_sum = 0.0;
-
-      // getting total number of commits for all languages
-      for(let i = 0; i < userInfo['languages'].length; i++) {
-        total_language_sum += userInfo['languages'][i]['commits'];
-      }
-
-      // normalizing score
-      for(let i = 0; i < userInfo['languages'].length; i++) {
-        userInfo['languages'][i]['commits'] = (userInfo['languages'][i]['commits'] * 100.0) / total_language_sum;
-      }
-
       userInfo['time'] = new Date();
       userInfo['fresh'] = true;
 
