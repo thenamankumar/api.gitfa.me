@@ -3,9 +3,16 @@ require('dotenv').config();
 const fetch = require('node-fetch');
 const userPayload = require('./payload').userPayload;
 const reposPayload = require('./payload').reposPayload;
+const winston = require('winston');
+
+// load loggers
+const debug_logs = winston.loggers.get('debug_logs');
+const error_logs = winston.loggers.get('error_logs');
 
 const fetchFresh = (username) => {
+  debug_logs.info('Fetching fresh data: \'' + username + '\'');
   console.log('Fetching fresh data:', '\'' + username + '\'');
+  
   return fetch('https://api.github.com/graphql', {
     method: 'POST',
     body: JSON.stringify(userPayload(username, true, null)),
@@ -17,6 +24,7 @@ const fetchFresh = (username) => {
     .then(response => {
       if (response.ok) return response.json();
 
+      error_logs.error('error');
       throw new Error('error');
     })
     .then(userData => {
@@ -26,10 +34,13 @@ const fetchFresh = (username) => {
 
       if (userData['data'] === null) throw new Error(userData['errors'][0]['message']);
       if (userData['data']['user'] === null) {
+        error_logs.error('\'' + username + '\' do not exist');
         console.log('\'' + username + '\'', 'do not exist');
+
         throw new Error('User not found')
       };
 
+      debug_logs.debug('User data fetched. Points remaining: ' + userData['data']['rateLimit']['remaining']);
       console.log('User data fetched. Points remaining:', userData['data']['rateLimit']['remaining']);
 
       userData = userData['data']['user'];
@@ -69,12 +80,17 @@ const fetchFresh = (username) => {
           .then(response => {
             if (response.ok) return response.json();
 
+            error_logs.error('error');
             throw new Error('error');
           })
           .then(userData => {
+            debug_logs.debug('Repo data fetched. Points remaining: ' + userData['data']['rateLimit']['remaining']);
             console.log('Repo data fetched. Points remaining:', userData['data']['rateLimit']['remaining']);
 
-            if (userData['data'] === null) throw new Error(userData['errors'][0]['message']);
+            if (userData['data'] === null) {
+              error_logs.error(userData['errors'][0]['message']);
+              throw new Error(userData['errors'][0]['message']);
+            }
 
             userData = userData['data']['user'];
             let repos = [];
@@ -137,7 +153,7 @@ const fetchFresh = (username) => {
             }
             return repos;
           })
-          .catch(error => console.log(error.message))
+          .catch(error => console.log(error.message)) // error_logs already updated above, hence, not updating here
       }
 
       return Promise.all(repositoryPromises)
@@ -185,6 +201,7 @@ const fetchFresh = (username) => {
       userInfo['time'] = new Date();
       userInfo['fresh'] = true;
 
+      debug_logs.info('Fresh data fetched: \'' + username + '\' at ' + userInfo['time']);
       console.log('Fresh data fetched:', '\'' + username + '\'', 'at', userInfo['time']);
       return userInfo;
     })

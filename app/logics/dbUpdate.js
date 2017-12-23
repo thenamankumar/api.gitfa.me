@@ -1,5 +1,10 @@
 require('dotenv').config();
 const fetchFresh = require('../logics/fetchFresh');
+const winston = require('winston');
+
+// load loggers
+const debug_logs = winston.loggers.get('debug_logs');
+const error_logs = winston.loggers.get('error_logs');
 
 const dbUpdate = (db, username, item) => {
     // more than 24 hours old data
@@ -11,8 +16,10 @@ const dbUpdate = (db, username, item) => {
 
         db.collection('stats').update(idDict, finalData, (err, result) => {
           if (err) {
+            error_logs.error('DB update failed: \'' + finalData['_id'] + '\' Error: ' + err.message);
             console.log('DB update failed:', '\'' + finalData['_id'] + '\'', 'Error:', err.message);
           } else {
+            debug_logs.info('DB update: \'' + finalData['_id'] + '\'');
             console.log('DB update:', '\'' + finalData['_id'] + '\'');
           }
         });
