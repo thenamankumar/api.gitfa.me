@@ -22,18 +22,14 @@ winston.loggers.add('debug_logs', {
     colorize: true,
     label: 'debug logs',
     timestamp: tsFormat,
-    prettyPrint: function (object) {
-      return JSON.stringify(object);
-    }
+    prettyPrint: true
   },
   file: {
     filename: `${logDir}/debug.log`,
     timestamp: tsFormat,
     json: false,
     level: 'debug',
-    prettyPrint: function (object) {
-      return JSON.stringify(object);
-    }
+    prettyPrint: true
   }
 });
 
@@ -44,18 +40,14 @@ winston.loggers.add('error_logs', {
     colorize: true,
     label: 'error logs',
     timestamp: tsFormat,
-    prettyPrint: function (object) {
-      return JSON.stringify(object);
-    }
+    prettyPrint: true
   },
   file: {
     filename: `${logDir}/error.log`,
     timestamp: tsFormat,
     json: false,
     level: 'error',
-    prettyPrint: function (object) {
-      return JSON.stringify(object);
-    }
+    prettyPrint: true
   }
 });
 
