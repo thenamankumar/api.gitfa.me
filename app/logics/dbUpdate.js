@@ -14,7 +14,7 @@ const dbUpdate = (db, username, item) => {
       // update to db
       finalData['_id'] = finalData['login'].toLowerCase();
 
-      db.collection('stats').update({'_id' : item['_id']}, finalData, (err, result) => {
+      db.collection('users').update({'_id' : item['_id']}, finalData, (err, result) => {
         if (err) {
           error_logs.error('DB update failed: \'' + finalData['_id'] + '\' Error: ' + err.message);
         } else {

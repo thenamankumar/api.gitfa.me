@@ -20,7 +20,7 @@ module.exports = function (app, db) {
       
       const idDict = {'_id': req.body.name};
 
-      db.collection('stats').findOne(idDict, (err, item) => {
+      db.collection('users').findOne(idDict, (err, item) => {
         if (err) {
           error_logs.error(err.message);
           return res.json({'success': false, 'message': err.message});

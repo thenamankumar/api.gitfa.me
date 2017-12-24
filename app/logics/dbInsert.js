@@ -12,7 +12,7 @@ const dbInsert = (db, username) => {
       // save to db
       finalData['_id'] = finalData['login'].toLowerCase();
 
-      db.collection('stats').insert(finalData, (err, result) => {
+      db.collection('users').insert(finalData, (err, result) => {
         if (err) {
           error_logs.error('DB insert failed: \'' + finalData['_id'] + '\' Error: ' + err.message);
         } else {
