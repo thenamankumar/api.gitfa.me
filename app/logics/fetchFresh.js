@@ -12,7 +12,7 @@ const error_logs = winston.loggers.get('error_logs');
 const fetchFresh = (username) => {
   debug_logs.info('Fetching fresh data: \'' + username + '\'');
   console.log('Fetching fresh data:', '\'' + username + '\'');
-  
+
   return fetch('https://api.github.com/graphql', {
     method: 'POST',
     body: JSON.stringify(userPayload(username, true, null)),
@@ -57,6 +57,7 @@ const fetchFresh = (username) => {
       userInfo['forks'] = 0;
       userInfo['watchers'] = 0;
       userInfo['languages'] = [];
+      userInfo['own_repos'] = 0;
       userInfo['repos'] = [];
 
       return userInfo;
@@ -93,7 +94,11 @@ const fetchFresh = (username) => {
             let repos = [];
             for (let i = 0; i < userData['repositories']['nodes'].length; i++) {
               let repoNode = userData['repositories']['nodes'][i];
-              if (repoNode['isFork']) repoNode = repoNode['parent'];
+              if (repoNode['isFork']) {
+                repoNode = repoNode['parent'];
+                userInfo['own_repos']++;
+              }
+
 
               // contributions null for empty repos
               let userCommits = repoNode['contributions'] ? repoNode['contributions']['target']['userCommits']['totalCount'] : 0;
