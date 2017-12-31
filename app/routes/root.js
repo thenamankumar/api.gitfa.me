@@ -43,7 +43,7 @@ module.exports = function (app, db) {
           let lastFetch = new Date(item['time']);
           let now = new Date();
 
-          if ((now.getTime() - lastFetch.getTime()) > 86400000 && (req.body.fresh === true || req.body.fresh == 'true')) {
+          if ((now.getTime() - lastFetch.getTime()) > 86400000 && (req.body.latest === true || req.body.latest == 'true')) {
             dbUpdate(db, req.body.name, item)
               .then((finalData) => {
                 debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
