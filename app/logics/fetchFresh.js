@@ -96,6 +96,7 @@ const fetchFresh = (username) => {
               let repoNode = userData['repositories']['nodes'][i];
               if (repoNode['isFork']) {
                 repoNode = repoNode['parent'];
+              } else {
                 userInfo['own_repos']++;
               }
 
