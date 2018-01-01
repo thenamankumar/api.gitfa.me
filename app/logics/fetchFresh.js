@@ -133,6 +133,9 @@ const fetchFresh = (username) => {
                   let langPresent = userInfo['languages'][k];
 
                   if (langPresent['name'] === languages[j]['name']) {
+                    if (langPresent['name'] === repoNode['primaryLanguage']['name']) {
+                      langPresent['commits'] += userCommits;
+                    }
                     langPresent['commits'] += userCommits;
                     langPresent['repos']++;
                     flag = 1;
