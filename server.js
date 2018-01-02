@@ -1,3 +1,4 @@
+var compression = require('compression');
 const express = require('express');
 const body_parser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
@@ -62,6 +63,7 @@ const port = 3000;
 const debug_logs = winston.loggers.get('debug_logs');
 const error_logs = winston.loggers.get('error_logs');
 
+app.use(compression());
 app.use(body_parser.urlencoded({extended: true}));
 
 // connect to database
