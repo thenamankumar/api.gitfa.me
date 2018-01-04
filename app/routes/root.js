@@ -20,6 +20,9 @@ module.exports = function (app, db) {
       
       const idDict = {'_id': req.body.name};
 
+      // TTL of 24 hours
+      db.collection('users').createIndex({ "time": 1 }, { expireAfterSeconds: 86400 } );
+
       db.collection('users').findOne(idDict, (err, item) => {
         if (err) {
           error_logs.error(err.message);
