@@ -1,6 +1,6 @@
 require('dotenv').config();
-const dbInsert = require('../logics/dbInsert');
-const dbUpdate = require('../logics/dbUpdate');
+const dbInsert = require('../actions/dbInsert');
+const dbUpdate = require('../actions/dbUpdate');
 const winston = require('winston');
 
 // load loggers

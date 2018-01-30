@@ -81,19 +81,20 @@ const reposPayload = (username, id, endCursor) => {
           name
           color
         }
-        languages(first: 100){
+        languages(first: 10, orderBy: {field: SIZE,direction: DESC}){
           nodes{
             name
             color
           }
+          totalSize
         }
         contributions: defaultBranchRef {
           target {
             ... on Commit {
-              userCommits: history(author: {id: $id}) {
+              userCommits: history(first: 0, author: {id: $id}) {
                 totalCount
               }
-              totalCommits: history {
+              totalCommits: history(first: 0) {
                 totalCount
               }
             }
@@ -126,7 +127,7 @@ const reposPayload = (username, id, endCursor) => {
       }
     `
   }
-}
+};
 
 module.exports =  {
   userPayload,
