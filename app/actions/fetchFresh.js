@@ -11,7 +11,6 @@ const error_logs = winston.loggers.get('error_logs');
 
 const fetchFresh = (username) => {
   debug_logs.info('Fetching fresh data: \'' + username + '\'');
-  console.log('Fetching fresh data:', '\'' + username + '\'');
 
   return fetch('https://api.github.com/graphql', {
     method: 'POST',
@@ -56,7 +55,6 @@ const fetchFresh = (username) => {
       userInfo['stars'] = 0;
       userInfo['forks'] = 0;
       userInfo['watchers'] = 0;
-      userInfo['languages'] = [];
       userInfo['own_repos'] = 0;
       userInfo['repos'] = [];
 
@@ -64,10 +62,7 @@ const fetchFresh = (username) => {
     })
     .then(userInfo => {
       // get repositories and contributions
-      let repositoryPromises = [];
-      repositoryPromises.push(traverseAllCursors(null));
-
-      function traverseAllCursors(endCursor) {
+      function traverseAllCursors(prevRepos, endCursor) {
         return fetch('https://api.github.com/graphql', {
           method: 'POST',
           body: JSON.stringify(reposPayload(username, userInfo['id'], endCursor)),
@@ -100,7 +95,6 @@ const fetchFresh = (username) => {
                 userInfo['own_repos']++;
               }
 
-
               // contributions null for empty repos
               let userCommits = repoNode['contributions'] ? repoNode['contributions']['target']['userCommits']['totalCount'] : 0;
               let totalCommits = repoNode['contributions'] ? repoNode['contributions']['target']['totalCommits']['totalCount'] : 0;
@@ -112,7 +106,7 @@ const fetchFresh = (username) => {
                 'watchers': repoNode['watchers']['totalCount'],
                 'forks': repoNode['forks']['totalCount'],
                 'url': repoNode['url'],
-                'languages': repoNode['languages']['nodes'],
+                'languages': repoNode['languages'],
                 'total_commits': totalCommits,
                 'user_commits': userCommits,
               });
@@ -126,48 +120,22 @@ const fetchFresh = (username) => {
 
               // count total commits in owned or parent of forked repos.
               userInfo['commits'] += userCommits;
-
-              let languages = repoNode['languages']['nodes'];
-              for (let j = 0; j < languages.length; j++) {
-                let flag = 0;
-                for (let k = 0; k < userInfo['languages'].length; k++) {
-                  let langPresent = userInfo['languages'][k];
-
-                  if (langPresent['name'] === languages[j]['name']) {
-                    if (langPresent['name'] === repoNode['primaryLanguage']['name']) {
-                      langPresent['commits'] += userCommits;
-                    }
-                    langPresent['commits'] += userCommits;
-                    langPresent['repos']++;
-                    flag = 1;
-                    break;
-                  }
-                }
-                if (!flag) {
-                  userInfo['languages'].push({
-                    name: languages[j]['name'],
-                    color: languages[j]['color'],
-                    commits: userCommits,
-                    repos: 1,
-                  });
-                }
-              }
             }
+
+            prevRepos = prevRepos.concat(repos);
 
             if (userData['repositories']['pageInfo']['hasNextPage']) {
-              repositoryPromises.push(traverseAllCursors(userData['repositories']['pageInfo']['endCursor']));
+              return traverseAllCursors(prevRepos, userData['repositories']['pageInfo']['endCursor']);
             }
-            return repos;
+            return prevRepos;
           })
           .catch(error => console.log(error.message)) // error_logs already updated above, hence, not updating here
       }
 
-      return Promise.all(repositoryPromises)
-        .then((repos) => {
+      return traverseAllCursors([], null)
+        .then((allRepos) => {
           // add all repos
-          for (let i = 0; i < repos.length; i++) {
-            userInfo['repos'] = userInfo['repos'].concat(repos[i]);
-          }
+          userInfo['repos'] = allRepos;
           return userInfo;
         });
     })
