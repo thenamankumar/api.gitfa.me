@@ -1,5 +1,5 @@
 require('dotenv').config();
-const fetchFresh = require('.//fetchFresh');
+const fetchFresh = require('./fetchFresh');
 const winston = require('winston');
 
 // load loggers
