@@ -24,7 +24,7 @@ const fetchFresh = (username) => {
       if (response.ok) return response.json();
 
       error_logs.error('error');
-      throw new Error('error');
+      return response.status(404).json({'message':'User not found'});
     })
     .then(userData => {
       let userInfo = {

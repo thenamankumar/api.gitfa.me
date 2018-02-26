@@ -17,6 +17,7 @@ const dbUpdate = (db, username, item) => {
       db.collection('users').update({'_id' : item['_id']}, finalData, (err, result) => {
         if (err) {
           error_logs.error('DB update failed: \'' + finalData['_id'] + '\' Error: ' + err.message);
+          throw new Error('Error in updating details');
         } else {
           debug_logs.info('DB update: \'' + finalData['_id'] + '\'');
         }
