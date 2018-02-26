@@ -17,7 +17,7 @@ module.exports = function (app, db) {
     }
     else {
       req.body.name = req.body.name.toLowerCase();
-      
+
       const idDict = {'_id': req.body.name};
 
       // TTL of 24 hours
@@ -30,16 +30,17 @@ module.exports = function (app, db) {
         }
         else if (item === null) {
           // ID not present in DB
-          dbInsert(db, req.body.name)
-            .then((finalData) => {
-              debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
-              return res.json(finalData);
-            })
-            .catch(error => {
-              error_logs.error(error.message);
-              const response = {'success': false, 'message': error.message};
-              return res.json(response);
-            });
+            return res.status(404).json({'success':false,'message':'User not found'});
+          // dbInsert(db, req.body.name)
+          //   .then((finalData) => {
+          //     debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
+          //     return res.json(finalData);
+          //   })
+          //   .catch(error => {
+          //     error_logs.error(error.message);
+          //     const response = {'success': false, 'message': error.message};
+          //     return res.json(response);
+          //   });
         }
         else {
           // id present in DB
@@ -55,7 +56,7 @@ module.exports = function (app, db) {
               .catch(error => {
                 error_logs.error(error.message);
                 const response = {'success': false, 'message': error.message};
-                return res.json(response);
+                return res.status(500).json(response);
               });
           }
           else {
