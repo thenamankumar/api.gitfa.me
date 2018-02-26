@@ -19,27 +19,22 @@ module.exports = function (app, db) {
       req.body.name = req.body.name.toLowerCase();
 
       const idDict = {'_id': req.body.name};
-
-      // TTL of 24 hours
-      db.collection('users').createIndex({ "time": 1 }, { expireAfterSeconds: 86400 } );
-
+      
       db.collection('users').findOne(idDict, (err, item) => {
         if (err) {
           error_logs.error(err.message);
-          return res.json({'success': false, 'message': err.message});
+          return res.json({'status': false, 'message': err.message});
         }
         else if (item === null) {
           // ID not present in DB
           //   return res.status(404).json({'success':false,'message':'User not found'});
           dbInsert(db, req.body.name)
             .then((finalData) => {
+              if (finalData.status !== 200) {
+                return res.json(finalData);
+              }
               debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
               return res.json(finalData);
-            })
-            .catch(error => {
-              error_logs.error(error.message);
-              const response = {'success': false, 'message': error.message};
-              return res.json(response);
             });
         }
         else {
@@ -47,16 +42,14 @@ module.exports = function (app, db) {
           let lastFetch = new Date(item['time']);
           let now = new Date();
 
-          if ((now.getTime() - lastFetch.getTime()) > 86400000 && (req.body.fresh === true || req.body.fresh == 'true')) {
+          if ((now.getTime() - lastFetch.getTime()) > 0 && (req.body.fresh === true || req.body.fresh == 'true')) {
             dbUpdate(db, req.body.name, item)
               .then((finalData) => {
+                if (finalData.status !== 200) {
+                  return res.json(finalData);
+                }
                 debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
                 return res.json(finalData);
-              })
-              .catch(error => {
-                error_logs.error(error.message);
-                const response = {'success': false, 'message': error.message};
-                return res.status(500).json(response);
               });
           }
           else {

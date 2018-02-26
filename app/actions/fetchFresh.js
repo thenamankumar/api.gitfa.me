@@ -23,19 +23,19 @@ const fetchFresh = (username) => {
     .then(response => {
       if (response.ok) return response.json();
 
-      error_logs.error('error');
-      return response.status(404).json({'message':'User not found'});
+      error_logs.error('error fetching user data');
+      throw new Error('error fetching user data');
     })
     .then(userData => {
-      let userInfo = {
-        'success': true,
-      };
+      let userInfo = {};
 
       if (userData['data'] === null) throw new Error(userData['errors'][0]['message']);
       if (userData['data']['user'] === null) {
         error_logs.error('\'' + username + '\' do not exist');
-
-        throw new Error('User not found')
+        return {
+          status: 404,
+          message: 'user not found',
+        };
       }
 
       debug_logs.debug('User data fetched. Points remaining: ' + userData['data']['rateLimit']['remaining']);
@@ -61,6 +61,11 @@ const fetchFresh = (username) => {
       return userInfo;
     })
     .then(userInfo => {
+
+      if (userInfo.status === 404) {
+        return userInfo;
+      }
+
       // get repositories and contributions
       function traverseAllCursors(prevRepos, endCursor) {
         return fetch('https://api.github.com/graphql', {
@@ -74,15 +79,15 @@ const fetchFresh = (username) => {
           .then(response => {
             if (response.ok) return response.json();
 
-            error_logs.error('error');
-            throw new Error('error');
+            error_logs.error('error fetching repos');
+            throw new Error('error fetching repos');
           })
           .then(userData => {
             debug_logs.debug('Repo data fetched. Points remaining: ' + userData['data']['rateLimit']['remaining']);
 
             if (userData['data'] === null) {
-              error_logs.error(userData['errors'][0]['message']);
-              throw new Error(userData['errors'][0]['message']);
+              error_logs.error('error fetching repos');
+              throw new Error('error fetching repos');
             }
 
             userData = userData['data']['user'];
@@ -128,8 +133,7 @@ const fetchFresh = (username) => {
               return traverseAllCursors(prevRepos, userData['repositories']['pageInfo']['endCursor']);
             }
             return prevRepos;
-          })
-          .catch(error => console.log(error.message)) // error_logs already updated above, hence, not updating here
+          });
       }
 
       return traverseAllCursors([], null)
@@ -140,12 +144,20 @@ const fetchFresh = (username) => {
         });
     })
     .then((userInfo) => {
+
+      if (userInfo.status === 404) {
+        return userInfo;
+      }
+
       userInfo['time'] = new Date();
       userInfo['fresh'] = true;
-
+      userInfo['status'] = 200;
       debug_logs.info('Fresh data fetched: \'' + username + '\' at ' + userInfo['time']);
       return userInfo;
     })
+    .catch(() => {
+      return {status: 500, message: 'internal server error'};
+    });
 };
 
 module.exports = fetchFresh;

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const fetchFresh = require('.//fetchFresh');
+const fetchFresh = require('./fetchFresh');
 const winston = require('winston');
 
 // load loggers
@@ -12,9 +12,12 @@ const dbUpdate = (db, username, item) => {
   return fetchFresh(username)
     .then((finalData) => {
       // update to db
+      if (finalData.status !== 200) {
+        return finalData;
+      }
       finalData['_id'] = finalData['login'].toLowerCase();
 
-      db.collection('users').update({'_id' : item['_id']}, finalData, (err, result) => {
+      db.collection('users').update({'_id': item['_id']}, finalData, (err, result) => {
         if (err) {
           error_logs.error('DB update failed: \'' + finalData['_id'] + '\' Error: ' + err.message);
           throw new Error('Error in updating details');
