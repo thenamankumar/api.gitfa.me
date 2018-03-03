@@ -79,6 +79,7 @@ const fetchFresh = (username) => {
           .then(response => {
             if (response.ok) return response.json();
 
+            console.log(JSON.stringify(reposPayload(username, userInfo['id'], endCursor)));
             error_logs.error('error fetching repos');
             throw new Error('error fetching repos');
           })
@@ -94,15 +95,12 @@ const fetchFresh = (username) => {
             let repos = [];
             for (let i = 0; i < userData['repositories']['nodes'].length; i++) {
               let repoNode = userData['repositories']['nodes'][i];
-              if (repoNode['isFork']) {
-                repoNode = repoNode['parent'];
-              } else {
+              if (!repoNode['isFork']) {
                 userInfo['own_repos']++;
               }
 
               // contributions null for empty repos
               let userCommits = repoNode['contributions'] ? repoNode['contributions']['target']['userCommits']['totalCount'] : 0;
-              let totalCommits = repoNode['contributions'] ? repoNode['contributions']['target']['totalCommits']['totalCount'] : 0;
 
               repos.push({
                 'full_name': repoNode['nameWithOwner'],
@@ -112,7 +110,6 @@ const fetchFresh = (username) => {
                 'forks': repoNode['forks']['totalCount'],
                 'url': repoNode['url'],
                 'languages': repoNode['languages'],
-                'total_commits': totalCommits,
                 'user_commits': userCommits,
               });
 
@@ -155,7 +152,8 @@ const fetchFresh = (username) => {
       debug_logs.info('Fresh data fetched: \'' + username + '\' at ' + userInfo['time']);
       return userInfo;
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log(e);
       return {status: 500, message: 'internal server error'};
     });
 };

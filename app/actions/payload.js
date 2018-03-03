@@ -47,7 +47,7 @@ const reposPayload = (username, id, endCursor) => {
       query($username: String!, $id: ID!, $afterCursor: String)
       {
         user(login: $username) {
-          repositories(first: 100, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
+          repositories(first: 25, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
             ...repoData
           }
         }
@@ -89,9 +89,6 @@ const reposPayload = (username, id, endCursor) => {
               userCommits: history(first: 0, author: {id: $id}) {
                 totalCount
               }
-              totalCommits: history(first: 0) {
-                totalCount
-              }
             }
           }
         }
@@ -106,9 +103,6 @@ const reposPayload = (username, id, endCursor) => {
         nodes {
           ... on Repository {
             isFork
-            parent {
-              ...repoStats
-            }
             ...repoStats
           }
         }
