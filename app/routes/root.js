@@ -19,7 +19,7 @@ module.exports = function (app, db) {
       req.body.name = req.body.name.toLowerCase();
 
       const idDict = {'_id': req.body.name};
-      
+
       db.collection('users').findOne(idDict, (err, item) => {
         if (err) {
           error_logs.error(err.message);
@@ -46,7 +46,7 @@ module.exports = function (app, db) {
             dbUpdate(db, req.body.name, item)
               .then((finalData) => {
                 if (finalData.status !== 200) {
-                  return res.json(finalData);
+                  return res.json(item);
                 }
                 debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
                 return res.json(finalData);
