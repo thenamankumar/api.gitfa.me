@@ -3,6 +3,8 @@ require('dotenv').config();
 const fetch = require('node-fetch');
 const userPayload = require('./payload').userPayload;
 const reposPayload = require('./payload').reposPayload;
+const cursorPayload = require('./payload').cursorPayload;
+
 const winston = require('winston');
 
 // load loggers
@@ -66,8 +68,44 @@ const fetchFresh = (username) => {
         return userInfo;
       }
 
+      function traverseAllCursors(prevCursors, endCursor) {
+        const time = new Date();
+        return fetch('https://api.github.com/graphql', {
+          method: 'POST',
+          body: JSON.stringify(cursorPayload(username, endCursor)),
+          headers: {
+            'Authorization': 'bearer ' + process.env.GIT_TOKEN,
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => {
+            console.log('cursor fetch time', new Date() - time);
+            if (response.ok) return response.json();
+
+            error_logs.error('error fetching cursor');
+            throw new Error('error fetching cursor');
+          })
+          .then((userData) => {
+            debug_logs.debug('Cursor fetched. Points remaining: ' + userData['data']['rateLimit']['remaining']);
+
+            if (userData['data'] === null) {
+              console.log(userData);
+              error_logs.error('error fetching cursor');
+              throw new Error('error fetching cursor');
+            }
+            const cursor = userData['data']['user']['repositories']['pageInfo']['endCursor'];
+            prevCursors.push(cursor);
+
+            if (userData['data']['user']['repositories']['pageInfo']['hasNextPage']) {
+              return traverseAllCursors(prevCursors, cursor);
+            }
+            return prevCursors;
+          });
+      }
+
       // get repositories and contributions
-      function traverseAllCursors(prevRepos, endCursor) {
+      function fetchRepos(endCursor) {
+        const time = new Date();
         return fetch('https://api.github.com/graphql', {
           method: 'POST',
           body: JSON.stringify(reposPayload(username, userInfo['id'], endCursor)),
@@ -77,9 +115,9 @@ const fetchFresh = (username) => {
           }
         })
           .then(response => {
+            console.log('repos fetch time', new Date() - time);
             if (response.ok) return response.json();
 
-            console.log(JSON.stringify(reposPayload(username, userInfo['id'], endCursor)));
             error_logs.error('error fetching repos');
             throw new Error('error fetching repos');
           })
@@ -90,7 +128,6 @@ const fetchFresh = (username) => {
               error_logs.error('error fetching repos');
               throw new Error('error fetching repos');
             }
-
             userData = userData['data']['user'];
             let repos = [];
             for (let i = 0; i < userData['repositories']['nodes'].length; i++) {
@@ -124,16 +161,25 @@ const fetchFresh = (username) => {
               userInfo['commits'] += userCommits;
             }
 
-            prevRepos = prevRepos.concat(repos);
-
-            if (userData['repositories']['pageInfo']['hasNextPage']) {
-              return traverseAllCursors(prevRepos, userData['repositories']['pageInfo']['endCursor']);
-            }
-            return prevRepos;
+            return repos;
           });
       }
 
       return traverseAllCursors([], null)
+        .then((allCursors) => {
+          const reposPromises = [];
+
+          reposPromises.push(fetchRepos(null));
+
+          allCursors.forEach((cursor) => {
+            reposPromises.push(fetchRepos(cursor));
+          });
+
+          return Promise.all(reposPromises)
+            .then((reposArray) => {
+              return reposArray.reduce((prev, cur) => prev.concat(cur));
+            });
+        })
         .then((allRepos) => {
           // add all repos
           userInfo['repos'] = allRepos;

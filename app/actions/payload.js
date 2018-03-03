@@ -41,6 +41,7 @@ const userPayload = (username) => {
     `
   }
 }
+
 const reposPayload = (username, id, endCursor) => {
   return {
     "query": `
@@ -77,7 +78,7 @@ const reposPayload = (username, id, endCursor) => {
         branch: defaultBranchRef {
           name
         }
-        languages(first: 5, orderBy: {field: SIZE,direction: DESC}){
+        languages(first: 25, orderBy: {field: SIZE,direction: DESC}){
           nodes{
             name
             color
@@ -118,7 +119,41 @@ const reposPayload = (username, id, endCursor) => {
   }
 };
 
+const cursorPayload = (username, endCursor) => {
+  return {
+    "query": `
+      query($username: String!, $afterCursor: String)
+      {
+        user(login: $username) {
+          repositories(first: 25, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
+            ...repoData
+          }
+        }
+        rateLimit {
+          limit
+          cost
+          remaining
+          resetAt
+        }
+      }
+      fragment repoData on RepositoryConnection {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    `,
+    "variables": `
+      {
+        "username": "` + username + `",
+        "afterCursor": ` + (endCursor !== null ? `"` + endCursor + `"` : `null`) + `
+      }
+    `
+  }
+};
+
 module.exports =  {
   userPayload,
-  reposPayload
+  reposPayload,
+  cursorPayload
 };
