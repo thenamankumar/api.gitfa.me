@@ -48,7 +48,7 @@ const reposPayload = (username, id, endCursor) => {
       query($username: String!, $id: ID!, $afterCursor: String)
       {
         user(login: $username) {
-          repositories(first: 25, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
+          repositories(first: 20, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
             ...repoData
           }
         }
@@ -78,7 +78,7 @@ const reposPayload = (username, id, endCursor) => {
         branch: defaultBranchRef {
           name
         }
-        languages(first: 25, orderBy: {field: SIZE,direction: DESC}){
+        languages(first: 100, orderBy: {field: SIZE,direction: DESC}){
           nodes{
             name
             color
@@ -125,7 +125,7 @@ const cursorPayload = (username, endCursor) => {
       query($username: String!, $afterCursor: String)
       {
         user(login: $username) {
-          repositories(first: 25, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
+          repositories(first: 20, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
             ...repoData
           }
         }
