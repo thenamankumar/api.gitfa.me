@@ -8,17 +8,17 @@ const debug_logs = winston.loggers.get('debug_logs');
 const error_logs = winston.loggers.get('error_logs');
 
 module.exports = function (app, db) {
-  app.post('/', (req, res) => {
+  app.get('/:username', (req, res) => {
     debug_logs.verbose('Request: %j', req.body);
 
-    if (!req.body.name) {
-      error_logs.error('This is not the correct way to use the API.');
+    if (!req.params.username) {
+      error_logs.error('`');
       return res.json({'success': false, 'message': 'This is not the correct way to use the API.'});
     }
     else {
-      req.body.name = req.body.name.toLowerCase();
+      req.params.username = req.params.username.toLowerCase();
 
-      const idDict = {'_id': req.body.name};
+      const idDict = {'_id': req.params.username};
 
       db.collection('users').findOne(idDict, (err, item) => {
         if (err) {
@@ -28,12 +28,12 @@ module.exports = function (app, db) {
         else if (item === null) {
           // ID not present in DB
           //   return res.status(404).json({'success':false,'message':'User not found'});
-          dbInsert(db, req.body.name)
+          dbInsert(db, req.params.username)
             .then((finalData) => {
               if (finalData.status !== 200) {
                 return res.json(finalData);
               }
-              debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
+              debug_logs.verbose('Response: %j', {name: req.params.username, fresh: finalData['fresh']});
               return res.json(finalData);
             });
         }
@@ -43,19 +43,19 @@ module.exports = function (app, db) {
           let now = new Date();
 
           if ((now.getTime() - lastFetch.getTime()) > 60*60*24*7*1000 && (req.body.fresh === true || req.body.fresh === 'true')) {
-            dbUpdate(db, req.body.name, item)
+            dbUpdate(db, req.params.username, item)
               .then((finalData) => {
                 if (finalData.status !== 200) {
                   return res.json(item);
                 }
-                debug_logs.verbose('Response: %j', {name: req.body.name, fresh: finalData['fresh']});
+                debug_logs.verbose('Response: %j', {name: req.params.username, fresh: finalData['fresh']});
                 return res.json(finalData);
               });
           }
           else {
             // send what is in DB
             item['fresh'] = false;
-            debug_logs.verbose('Response: %j', {name: req.body.name, fresh: item['fresh']});
+            debug_logs.verbose('Response: %j', {name: req.params.username, fresh: item['fresh']});
             return res.json(item);
           }
         }

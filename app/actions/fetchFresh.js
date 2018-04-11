@@ -26,6 +26,7 @@ const fetchFresh = (username) => {
       if (response.ok) return response.json();
 
       error_logs.error('error fetching user data');
+      console.log(response);
       throw new Error('error fetching user data');
     })
     .then(userData => {
@@ -36,6 +37,7 @@ const fetchFresh = (username) => {
         error_logs.error('\'' + username + '\' do not exist');
         return {
           status: 404,
+          login: username,
           message: 'user not found',
         };
       }
@@ -200,7 +202,11 @@ const fetchFresh = (username) => {
     })
     .catch((e) => {
       console.log(e);
-      return {status: 500, message: 'internal server error'};
+      return {
+        status: 500,
+        login: username,
+        message: 'internal server error'
+      };
     });
 };
 
