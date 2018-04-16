@@ -150,6 +150,7 @@ const fetchFresh = (username) => {
                 'url': repoNode['url'],
                 'languages': repoNode['languages'],
                 'user_commits': userCommits,
+                'isFork': repoNode['isFork']
               });
 
               // count total stars, forks and watchers of owned repos

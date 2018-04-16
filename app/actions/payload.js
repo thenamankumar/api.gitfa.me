@@ -78,7 +78,7 @@ const reposPayload = (username, id, endCursor) => {
         branch: defaultBranchRef {
           name
         }
-        languages(first: 100, orderBy: {field: SIZE,direction: DESC}){
+        languages(first: 10, orderBy: {field: SIZE,direction: DESC}){
           nodes{
             name
             color

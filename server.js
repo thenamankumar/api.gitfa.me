@@ -8,7 +8,6 @@ const winston = require('winston');  // logger
 const fs = require('fs');  // for file IO
 const logDir = 'logs';  // name of directory where logs will be stored
 
-
 // Create the log directory if it does not exist
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
@@ -56,6 +55,8 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 const port = 3000;
 
@@ -68,12 +69,19 @@ app.use(body_parser.urlencoded({extended: true}));
 
 // connect to database
 MongoClient.connect(db.url, (err, database) => {
-  if(err) {
+  if (err) {
     error_logs.error(err);
     return console.log(err);
   }
 
   require('./app/routes')(app, database);
+
+  io.on('connection', function (socket) {
+    console.log('a user connected');
+    socket.on('disconnect', function () {
+      console.log('user disconnected');
+    });
+  });
 
   app.listen(port, process.env.ADDRESS, () => {
     debug_logs.info('Running on ' + port);

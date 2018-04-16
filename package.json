@@ -28,6 +28,7 @@
     "express": "^4.16.2",
     "mongodb": "^2.2.33",
     "node-fetch": "^1.7.3",
+    "socket.io": "^2.1.0",
     "winston": "^2.4.0"
   }
 }
