@@ -149,6 +149,7 @@ const fetchFresh = (username) => {
                 'forks': repoNode['forks']['totalCount'],
                 'url': repoNode['url'],
                 'languages': repoNode['languages'],
+                'size': repoNode['languages'].totalSize,
                 'user_commits': userCommits,
                 'isFork': repoNode['isFork']
               });

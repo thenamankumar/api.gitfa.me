@@ -83,6 +83,7 @@ const reposPayload = (username, id, endCursor) => {
             name
             color
           }
+          totalSize
         }
         contributions: defaultBranchRef {
           target {
