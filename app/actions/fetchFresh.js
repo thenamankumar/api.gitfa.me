@@ -155,7 +155,7 @@ const fetchFresh = (username) => {
               });
 
               // count total stars, forks and watchers of owned repos
-              if (userInfo['login'] === repoNode['owner']['login']) {
+              if (!repoNode['isFork']) {
                 userInfo['stars'] += repoNode['stargazers']['totalCount'];
                 userInfo['forks'] += repoNode['forks']['totalCount'];
                 userInfo['watchers'] += repoNode['watchers']['totalCount'];
