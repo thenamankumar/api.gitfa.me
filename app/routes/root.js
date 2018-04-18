@@ -43,7 +43,6 @@ module.exports = function (app, db) {
           let now = new Date();
 
           if ((now.getTime() - lastFetch.getTime()) > 60 * 60 * 24 ** 1000 && (req.query.fresh === true || req.query.fresh === 'true')) {
-            console.log('updating');
             dbUpdate(db, req.params.username, item)
               .then((finalData) => {
                 if (finalData.status !== 200) {
