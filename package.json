@@ -1,0 +1,20 @@
+{
+  "name": "api.sharecake.io",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/hereisnaman/api.sharecake.io.git",
+  "author": "Naman Kumar <naman@outlook.in>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app/index.js",
+    "dev": "npm-run-all --parallel start playground",
+    "playground": "graphql playground"
+  },
+  "dependencies": {
+    "graphql-yoga": "^1.9.2"
+  },
+  "devDependencies": {
+    "graphql-cli": "^2.15.9",
+    "npm-run-all": "^4.1.2"
+  }
+}
