@@ -1,7 +1,5 @@
-type User {
-  id: ID!
-}
+# import User from "./models/User.graphql"
 
 type Query {
-  user(id: ID!): User!
+  user(id: ID!): User
 }
