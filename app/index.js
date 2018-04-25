@@ -35,7 +35,7 @@ const serverOptions = {
 server.express.use(compression());
 
 if (process.env.NODE_ENV === 'production') {
-  // initiate sentry
+  // initiate sentry on production
   Raven.config(process.env.SENTRY_KEY).install();
 
   if (process.env.APOLLO_ENGINE_KEY) {
