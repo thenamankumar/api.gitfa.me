@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node app/index.js",
-    "dev": "file=env/dev.env npm-run-all --parallel start playground",
+    "dev": "ENV_FILE=env/dev.env npm-run-all --parallel start playground",
     "playground": "graphql playground --dotenv ./env/dev.env",
     "prisma": "prisma deploy --env-file ./env/prod.env",
     "prisma-dev": "prisma deploy --env-file ./env/dev.env",

@@ -1,5 +1,5 @@
 const path = require('path');
-require('dotenv').config({ path: path.resolve(process.cwd(), process.env.file || 'env/dev.env') });
+require('dotenv').config({ path: path.resolve(process.cwd(), process.env.ENV_FILE || 'env/dev.env') });
 const { GraphQLServer } = require('@fabien0102/graphql-yoga');
 const { Prisma } = require('prisma-binding');
 const { ApolloEngine } = require('apollo-engine');
