@@ -13,6 +13,7 @@
     "prisma-dev": "prisma deploy --env-file ./env/dev.env"
   },
   "dependencies": {
+    "compression": "^1.7.2",
     "dotenv": "^5.0.1",
     "graphql-yoga": "^1.9.2",
     "prisma-binding": "^1.5.17"
