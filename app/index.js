@@ -3,9 +3,11 @@ require('dotenv').config({path: path.resolve(process.cwd(), `env/${process.env =
 const {GraphQLServer} = require('graphql-yoga');
 const { Prisma } = require('prisma-binding');
 const Query = require('./resolvers/query/');
+const Mutation = require('./resolvers/mutation/');
 
 const resolvers = {
   Query,
+  Mutation,
 };
 
 const server = new GraphQLServer({
@@ -15,7 +17,7 @@ const server = new GraphQLServer({
     ...req,
     db: new Prisma({
       typeDefs: 'app/database/api.graphql',
-      endpoint: `http://localhost:4466/`,
+      endpoint: `http://localhost:4466/${process.env.DB_API_NAME}/${process.env.DB_API_STAGE}`,
       secret: process.env.DB_API_SECRET,
       debug: true,
     }),

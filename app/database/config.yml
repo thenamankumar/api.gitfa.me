@@ -1,13 +1,12 @@
-## The service name, this will be part of the endpoint of the Prisma API
-service: ${env:DB_API_NAME}
-#
-## The deployment stage, this will also be part of the API endpoint
-stage: ${env:DB_API_STAGE}
-#
-## Points to the file that holds your data model
+# database schema
 datamodel: schema.graphql
-#
-## You can only access the API when providing JWTs that are signed with this secret
+# graphql api secret
 secret: ${env:DB_API_SECRET}
-#
-cluster: ${env:DB_API_CLUSTER}
+# endpoint for db graphql api
+endpoint: http://localhost:4466/${env:DB_API_NAME}/${env:DB_API_STAGE}
+# generate db schema after development
+hooks:
+  post-deploy:
+    - echo "Deployment finished"
+    - graphql get-schema --project database
+    - graphql prepare
