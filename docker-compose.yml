@@ -1,0 +1,24 @@
+version: '3'
+services:
+  prisma:
+    image: prismagraphql/prisma:1.7
+    restart: always
+    ports:
+    - "4400:4400"
+    environment:
+      PRISMA_CONFIG: |
+        port: 4400
+        databases:
+          default:
+            connector: postgres
+            active: true
+            host: db
+            port: 5432
+            user: ${DB_USER}
+            password: ${DB_SECRET}
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_SECRET}

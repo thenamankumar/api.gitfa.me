@@ -1,0 +1,13 @@
+## The service name, this will be part of the endpoint of the Prisma API
+service: ${env:DB_API_NAME}
+#
+## The deployment stage, this will also be part of the API endpoint
+stage: ${env:DB_API_STAGE}
+#
+## Points to the file that holds your data model
+datamodel: schema.graphql
+#
+## You can only access the API when providing JWTs that are signed with this secret
+secret: ${env:DB_API_SECRET}
+#
+cluster: ${env:DB_API_CLUSTER}
