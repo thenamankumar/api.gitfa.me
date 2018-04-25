@@ -1,0 +1,6 @@
+{
+  "app/**/*.{js,json,graphql}": [
+    "prettier --write",
+    "git add"
+  ]
+}

@@ -10,7 +10,9 @@
     "dev": "file=env/dev.env npm-run-all --parallel start playground",
     "playground": "graphql playground --dotenv ./env/dev.env",
     "prisma": "prisma deploy --env-file ./env/prod.env",
-    "prisma-dev": "prisma deploy --env-file ./env/dev.env"
+    "prisma-dev": "prisma deploy --env-file ./env/dev.env",
+    "precommit": "lint-staged",
+    "format": "prettier --write \"app/**/*.{js,json,graphql}\""
   },
   "dependencies": {
     "@fabien0102/graphql-yoga": "^3.0.0",
@@ -20,8 +22,18 @@
     "prisma-binding": "^1.5.17"
   },
   "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-cli": "^1.1.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-prettier": "^2.6.0",
     "graphql-cli": "^2.15.10",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.4",
     "npm-run-all": "^4.1.2",
+    "prettier": "^1.12.1",
     "prisma": "^1.7.1"
   }
 }

@@ -1,10 +1,13 @@
 module.exports = {
   createUser: (root, args, context, info) => {
-    const {name} = args;
-    return context.db.mutation.createUser({
-      data: {
-        name
+    const { name } = args;
+    return context.db.mutation.createUser(
+      {
+        data: {
+          name,
+        },
       },
-    }, info);
+      info,
+    );
   },
 };

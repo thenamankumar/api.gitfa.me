@@ -1,7 +1,7 @@
 const path = require('path');
-require('dotenv').config({path: path.resolve(process.cwd(), process.env.file || 'env/dev.env')});
-const {GraphQLServer} = require('@fabien0102/graphql-yoga');
-const {Prisma} = require('prisma-binding');
+require('dotenv').config({ path: path.resolve(process.cwd(), process.env.file || 'env/dev.env') });
+const { GraphQLServer } = require('@fabien0102/graphql-yoga');
+const { Prisma } = require('prisma-binding');
 const { ApolloEngine } = require('apollo-engine');
 const compression = require('compression');
 const resolvers = require('./resolvers/');
@@ -48,11 +48,8 @@ if (process.env.APOLLO_ENGINE_KEY) {
       httpServer,
       graphqlPaths: ['/'],
     },
-    () =>
-      console.log(
-        `Server with Apollo Engine is running on http://localhost:${port}`,
-      ),
-  )
+    () => console.log(`Server with Apollo Engine is running on http://localhost:${port}`),
+  );
 } else {
   // start server without apollo engine
   server.start(
@@ -60,6 +57,5 @@ if (process.env.APOLLO_ENGINE_KEY) {
       port,
     },
     () => console.log(`Server is running on http://localhost:${port}`),
-  )
+  );
 }
-
