@@ -5,10 +5,10 @@ branches:
   only:
     - master
     - stage
-script:
-  - bash ./ci/test.sh; fi
-before_deploy:
+before_script:
   - openssl aes-256-cbc -a -d -in key.pem.enc -out key.pem -k $ENC_KEY
-deploy:
+script:
+    - bash ./ci/test.sh; fi
+after_success:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" = "stage"]; then bash ./ci/stage.sh; fi
   - if [ "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" = "master"]; then bash ./ci/deploy.sh; fi
