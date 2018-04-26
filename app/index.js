@@ -75,6 +75,7 @@ if (process.env.NODE_ENV === 'production') {
   server.start(
     {
       port,
+      cors: serverOptions.cros,
     },
     () => console.log(`Server is running on http://localhost:${port}`),
   );
