@@ -33,12 +33,12 @@ const serverOptions = {
   cacheControl: true, // cache control data in response for apollo engine
   cors: {
     origin: [
-      'https://sharecake.io/', // client
-      'http://localhost:5000/', // client on local
-      'https://docs.sharecake.io/', // api docs with graphiql
-      'http://localhost:3000/', // graphql playground
+      'https://sharecake.io', // client
+      'http://localhost:5000', // client on local
+      'https://docs.sharecake.io', // api docs with graphiql
+      'http://localhost:3000', // graphql playground
     ],
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   },
