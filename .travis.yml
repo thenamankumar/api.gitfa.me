@@ -10,5 +10,5 @@ before_script:
 script:
     - bash ./ci/test.sh
 after_success:
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" = "stage" ]; then bash ./ci/stage.sh; fi
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" = "master" ]; then bash ./ci/deploy.sh; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" AND "$TRAVIS_BRANCH" = "stage" ]; then bash ./ci/stage.sh; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" AND "$TRAVIS_BRANCH" = "master" ]; then bash ./ci/deploy.sh; fi
