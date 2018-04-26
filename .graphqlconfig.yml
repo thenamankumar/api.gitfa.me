@@ -7,4 +7,4 @@ projects:
   database:
     schemaPath: app/database/api.graphql
     extensions:
-      prisma: app/database/config.yml
+      prisma: prisma.yml

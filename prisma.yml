@@ -1,5 +1,5 @@
 # database schema
-datamodel: schema.graphql
+datamodel: app/database/schema.graphql
 # graphql api secret
 secret: ${env:DB_API_SECRET}
 # endpoint for db graphql api

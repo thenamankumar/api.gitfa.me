@@ -1,5 +1,5 @@
 # source: http://localhost:4466/sharecake/dev
-# timestamp: Wed Apr 25 2018 14:08:09 GMT+0530 (IST)
+# timestamp: Thu Apr 26 2018 09:29:24 GMT+0530 (IST)
 
 type AggregateUser {
   count: Int!
@@ -23,8 +23,8 @@ type Mutation {
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   deleteUser(where: UserWhereUniqueInput!): User
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
-  deleteManyUsers(where: UserWhereInput!): BatchPayload!
+  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -179,6 +179,11 @@ input UserSubscriptionWhereInput {
   OR: [UserSubscriptionWhereInput!]
 
   """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [UserSubscriptionWhereInput!]
+
+  """
   The subscription event gets dispatched when it's listed in mutation_in
   """
   mutation_in: [MutationType!]
@@ -214,6 +219,11 @@ input UserWhereInput {
   Logical OR on all given filters.
   """
   OR: [UserWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [UserWhereInput!]
   id: ID
 
   """
