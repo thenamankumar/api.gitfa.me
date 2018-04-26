@@ -1,5 +1,7 @@
 const path = require('path');
-require('dotenv').config({ path: path.resolve(process.cwd(), process.env.ENV_FILE || 'env/dev.env') });
+require('dotenv').config({
+  path: path.resolve(process.cwd(), process.env.NODE_ENV === 'production' ? 'env/prod.env' : 'env/dev.env'),
+});
 const { GraphQLServer } = require('@fabien0102/graphql-yoga');
 const { Prisma } = require('prisma-binding');
 const { ApolloEngine } = require('apollo-engine');
@@ -37,6 +39,7 @@ server.express.use(compression());
 if (process.env.NODE_ENV === 'production') {
   // initiate sentry on production
   Raven.config(process.env.SENTRY_KEY).install();
+  console.log('Sentry deployed');
 
   if (process.env.APOLLO_ENGINE_KEY) {
     // create a new apollo engine instance
