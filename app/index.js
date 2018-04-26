@@ -38,6 +38,9 @@ const serverOptions = {
       'https://docs.sharecake.io/', // api docs with graphiql
       'http://localhost:3000/', // graphql playground
     ],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   },
 };
 
