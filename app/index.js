@@ -39,7 +39,7 @@ const serverOptions = {
       'http://localhost:3000', // graphql playground
     ],
     methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
     credentials: true,
   },
 };
