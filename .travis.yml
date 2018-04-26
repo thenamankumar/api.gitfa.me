@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "stable"
+branches:
+  only:
+    - master
+    - stage
+script:
+  - bash ./ci/test.sh; fi
+before_deploy:
+  - openssl aes-256-cbc -a -d -in key.pem.enc -out key.pem -k $ENC_KEY
+deploy:
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" = "stage"]; then bash ./ci/stage.sh; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" = "master"]; then bash ./ci/deploy.sh; fi
