@@ -7,6 +7,7 @@ const { Prisma } = require('prisma-binding');
 const { ApolloEngine } = require('apollo-engine');
 const compression = require('compression');
 const Raven = require('raven');
+const cors = require('cors');
 const resolvers = require('./resolvers/');
 
 // server port
@@ -31,7 +32,11 @@ const server = new GraphQLServer({
 const serverOptions = {
   tracing: true, // tracking for apollo engine
   cacheControl: true, // cache control data in response for apollo engine
-  cors: {
+};
+
+// allow cors
+server.express.use(
+  cors({
     origin: [
       'https://sharecake.io', // client
       'http://localhost:5000', // client on local
@@ -41,8 +46,8 @@ const serverOptions = {
     methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
     credentials: true,
-  },
-};
+  }),
+);
 
 // enable gzip compression
 server.express.use(compression());
@@ -75,7 +80,6 @@ if (process.env.NODE_ENV === 'production') {
   server.start(
     {
       port,
-      cors: serverOptions.cros,
     },
     () => console.log(`Server is running on http://localhost:${port}`),
   );
