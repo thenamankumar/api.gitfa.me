@@ -1,14 +1,15 @@
-const path = require('path');
+import path from 'path';
+import { GraphQLServer } from '@fabien0102/graphql-yoga';
+import { Prisma } from 'prisma-binding';
+import { ApolloEngine } from 'apollo-engine';
+import compression from 'compression';
+import Raven from 'raven';
+import cors from 'cors';
+import resolvers from './resolvers/';
+
 require('dotenv').config({
   path: path.resolve(process.cwd(), process.env.NODE_ENV === 'production' ? 'env/prod.env' : 'env/dev.env'),
 });
-const { GraphQLServer } = require('@fabien0102/graphql-yoga');
-const { Prisma } = require('prisma-binding');
-const { ApolloEngine } = require('apollo-engine');
-const compression = require('compression');
-const Raven = require('raven');
-const cors = require('cors');
-const resolvers = require('./resolvers/');
 
 // server port
 const port = process.env.port || 4000;
