@@ -53,7 +53,6 @@ server.express.use(compression());
 if (process.env.NODE_ENV === 'production') {
   // initiate sentry on production
   Raven.config(process.env.SENTRY_KEY).install();
-  console.log('Sentry deployed');
 
   if (process.env.APOLLO_ENGINE_KEY) {
     // create a new apollo engine instance
@@ -66,11 +65,11 @@ if (process.env.NODE_ENV === 'production') {
     // start server with apollo engine
     engine.listen(
       {
-        port,
-        httpServer,
-        graphqlPaths: ['/'],
+        port, // default 4000
+        httpServer, // graphql server
+        graphqlPaths: ['/'], // graphql api path
       },
-      () => console.log(`Server with Apollo Engine is running on http://localhost:${port}`),
+      () => console.log(`Server with Apollo Engine and Sentry is running on http://localhost:${port}`),
     );
   }
 } else {
