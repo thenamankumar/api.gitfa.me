@@ -55,8 +55,8 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
+env/dev.env
 env/prod.env
-env.dev.env
 .idea/
 .DS_Store
 package-lock.json
