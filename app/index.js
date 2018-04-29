@@ -8,6 +8,7 @@ import _ from './env';
 import resolvers from './resolvers/';
 import dbBinding from './utils/dbBinding';
 import passport from './passport/passportHandler';
+import generateToken from './utils/generateToken';
 
 // server port
 const port = process.env.port || 4000;
@@ -53,14 +54,15 @@ server.express.get(
   '/auth/github',
   passport.authenticate('github', { scope: ['read:user', 'user:email', 'read:org', 'read:discussion'] }),
 );
-server.express.get(
-  '/auth/github/callback',
-  passport.authenticate('github', { failureRedirect: '/login' }),
-  (req, res) => {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  },
-);
+server.express.get('/auth/github/callback', passport.authenticate('github'), (req, res) => {
+  if (req.user.status === 200) {
+    // return token on successful auth
+    res.json({ status: 200, token: generateToken(req.user.data) });
+  } else {
+    // return error object
+    res.json(req.user);
+  }
+});
 
 if (process.env.NODE_ENV === 'production') {
   // initiate sentry on production

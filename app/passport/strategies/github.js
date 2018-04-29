@@ -10,33 +10,37 @@ export default new GitHubStrategy(
   },
   async (accessToken, refreshToken, profile, done) => {
     const profileData = profile._json;
+    console.log('statergy');
+    const userPayload = `{
+        id
+        username
+      }`;
+    let user;
+    /*
+    There are 3 cases:
+      1) first time login
+      2) this github integration
+      3) another github integration
+      4) no github integration
+    */
     try {
       const db = dbBinding(); // create new prisma binding instance
-      /*
-      There are 3 cases:
-        1) first time login
-        2) this github integration
-        3) another github integration
-        4) none github integration
-      */
       const [presentUser] = await db.query.users(
         {
           where: {
             OR: [{ email: profileData.email }, { integrations_some: { type: 'GITHUB', uid: profileData.id } }],
           },
         },
-        `
-        {
+        `{
           id
           email
           integrations {
             type
             uid
           }
-        }
-      `,
+        }`,
       );
-      let user;
+
       if (presentUser) {
         // account exists either with github integration or not
         const presentGithubIntegration = (presentUser.integrations || []).find(({ type }) => type === 'GITHUB');
@@ -47,17 +51,20 @@ export default new GitHubStrategy(
               case 2 - this github integration
               get present user data and return
             */
-            user = await db.query.user({ where: { id: presentUser.id } });
+            user = await db.query.user({ where: { id: presentUser.id } }, userPayload);
           } else {
             /*
               case 3 - another github integration
               throw error
             */
-            return done('github already integrated');
+            return done(null, {
+              status: 409,
+              message: 'A github account already integrated.',
+            });
           }
         } else {
           /*
-            case 4 - none github integration
+            case 4 - no github integration
             add this integration and return user data
           */
           const newIntegration = await db.mutation.createIntegration({
@@ -70,27 +77,36 @@ export default new GitHubStrategy(
             },
           });
 
-          user = newIntegration.then(() => db.query.user({ where: { id: presentUser.id } }));
+          user = newIntegration.then(() => db.query.user({ where: { id: presentUser.id } }, userPayload));
         }
       } else {
         /*
           case 1 - first time login
           create a new account
         */
-        user = await db.mutation.createUser({
-          data: {
-            name: profileData.name,
-            email: profileData.email,
-            integrations: { create: { type: 'GITHUB', uid: profileData.id, accessToken, refreshToken } },
+        user = await db.mutation.createUser(
+          {
+            data: {
+              name: profileData.name,
+              email: profileData.email,
+              integrations: { create: { type: 'GITHUB', uid: profileData.id, accessToken, refreshToken } },
+            },
           },
-        });
+          userPayload,
+        );
       }
 
       // return user data
-      return done(null, user);
+      return done(null, {
+        status: 200,
+        data: user,
+      });
     } catch (err) {
       Raven.captureException(err); // send error to sentry
-      return done(err); // return error
+      return done({
+        status: 500,
+        message: err,
+      }); // return error
     }
   },
 );

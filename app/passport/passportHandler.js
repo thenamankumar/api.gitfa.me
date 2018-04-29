@@ -12,7 +12,7 @@ passport.use('local', local);
 passport.serializeUser((user, cb) => {
   console.log('SERIALIZE - - - -');
   console.log(user);
-  cb(null, user.id);
+  cb(null, user.data.id);
 });
 
 // deserialize user
@@ -30,6 +30,10 @@ passport.deserializeUser(async (userId, cb) => {
     cb(null, user);
   } catch (err) {
     Raven.captureException(err); // send error to sentry
+    cb({
+      status: 500,
+      message: err,
+    });
   }
 });
 
