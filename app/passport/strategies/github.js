@@ -19,13 +19,14 @@ export default new GitHubStrategy(
         3) another github integration
         4) none github integration
       */
-      const presentUser = await db.query.users(
+      const [presentUser] = await db.query.users(
         {
           where: {
             OR: [{ email: profileData.email }, { integrations_some: { type: 'GITHUB', uid: profileData.id } }],
           },
         },
-        `{
+        `
+        {
           id
           email
           integrations {
@@ -34,14 +35,14 @@ export default new GitHubStrategy(
           }
         }
       `,
-      )[0];
+      );
       let user;
       if (presentUser) {
         // account exists either with github integration or not
-        const presentGithubIntegration = presentUser.integrations_some.find(({ type }) => type === 'GITHUB');
+        const presentGithubIntegration = (presentUser.integrations || []).find(({ type }) => type === 'GITHUB');
 
         if (presentGithubIntegration) {
-          if (presentGithubIntegration.uid === profileData.id) {
+          if (presentGithubIntegration.uid === profileData.id.toString()) {
             /*
               case 2 - this github integration
               get present user data and return
