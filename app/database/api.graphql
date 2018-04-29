@@ -1,5 +1,9 @@
 # source: http://localhost:4466/sharecake/dev
-# timestamp: Thu Apr 26 2018 09:29:24 GMT+0530 (IST)
+# timestamp: Sat Apr 28 2018 10:22:05 GMT+0530 (IST)
+
+type AggregateIntegration {
+  count: Int!
+}
 
 type AggregateUser {
   count: Int!
@@ -12,6 +16,478 @@ type BatchPayload {
   count: Long!
 }
 
+type Integration implements Node {
+  id: ID!
+  type: IntegrationType!
+  uid: String!
+  accessToken: String!
+  refreshToken: String
+  user(where: UserWhereInput): User!
+}
+
+"""
+A connection to a list of items.
+"""
+type IntegrationConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [IntegrationEdge]!
+  aggregate: AggregateIntegration!
+}
+
+input IntegrationCreateInput {
+  type: IntegrationType!
+  uid: String!
+  accessToken: String!
+  refreshToken: String
+  user: UserCreateOneWithoutIntegrationsInput!
+}
+
+input IntegrationCreateManyWithoutUserInput {
+  create: [IntegrationCreateWithoutUserInput!]
+  connect: [IntegrationWhereUniqueInput!]
+}
+
+input IntegrationCreateWithoutUserInput {
+  type: IntegrationType!
+  uid: String!
+  accessToken: String!
+  refreshToken: String
+}
+
+"""
+An edge in a connection.
+"""
+type IntegrationEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Integration!
+
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum IntegrationOrderByInput {
+  id_ASC
+  id_DESC
+  type_ASC
+  type_DESC
+  uid_ASC
+  uid_DESC
+  accessToken_ASC
+  accessToken_DESC
+  refreshToken_ASC
+  refreshToken_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type IntegrationPreviousValues {
+  id: ID!
+  type: IntegrationType!
+  uid: String!
+  accessToken: String!
+  refreshToken: String
+}
+
+type IntegrationSubscriptionPayload {
+  mutation: MutationType!
+  node: Integration
+  updatedFields: [String!]
+  previousValues: IntegrationPreviousValues
+}
+
+input IntegrationSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [IntegrationSubscriptionWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [IntegrationSubscriptionWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [IntegrationSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: IntegrationWhereInput
+}
+
+enum IntegrationType {
+  TWITTER
+  GITHUB
+}
+
+input IntegrationUpdateInput {
+  type: IntegrationType
+  uid: String
+  accessToken: String
+  refreshToken: String
+  user: UserUpdateOneWithoutIntegrationsInput
+}
+
+input IntegrationUpdateManyWithoutUserInput {
+  create: [IntegrationCreateWithoutUserInput!]
+  connect: [IntegrationWhereUniqueInput!]
+  disconnect: [IntegrationWhereUniqueInput!]
+  delete: [IntegrationWhereUniqueInput!]
+  update: [IntegrationUpdateWithWhereUniqueWithoutUserInput!]
+  upsert: [IntegrationUpsertWithWhereUniqueWithoutUserInput!]
+}
+
+input IntegrationUpdateWithoutUserDataInput {
+  type: IntegrationType
+  uid: String
+  accessToken: String
+  refreshToken: String
+}
+
+input IntegrationUpdateWithWhereUniqueWithoutUserInput {
+  where: IntegrationWhereUniqueInput!
+  data: IntegrationUpdateWithoutUserDataInput!
+}
+
+input IntegrationUpsertWithWhereUniqueWithoutUserInput {
+  where: IntegrationWhereUniqueInput!
+  update: IntegrationUpdateWithoutUserDataInput!
+  create: IntegrationCreateWithoutUserInput!
+}
+
+input IntegrationWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [IntegrationWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [IntegrationWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [IntegrationWhereInput!]
+  id: ID
+
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  type: IntegrationType
+
+  """
+  All values that are not equal to given value.
+  """
+  type_not: IntegrationType
+
+  """
+  All values that are contained in given list.
+  """
+  type_in: [IntegrationType!]
+
+  """
+  All values that are not contained in given list.
+  """
+  type_not_in: [IntegrationType!]
+  uid: String
+
+  """
+  All values that are not equal to given value.
+  """
+  uid_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  uid_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  uid_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  uid_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  uid_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  uid_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  uid_gte: String
+
+  """
+  All values containing the given string.
+  """
+  uid_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  uid_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  uid_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  uid_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  uid_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  uid_not_ends_with: String
+  accessToken: String
+
+  """
+  All values that are not equal to given value.
+  """
+  accessToken_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  accessToken_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  accessToken_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  accessToken_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  accessToken_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  accessToken_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  accessToken_gte: String
+
+  """
+  All values containing the given string.
+  """
+  accessToken_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  accessToken_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  accessToken_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  accessToken_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  accessToken_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  accessToken_not_ends_with: String
+  refreshToken: String
+
+  """
+  All values that are not equal to given value.
+  """
+  refreshToken_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  refreshToken_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  refreshToken_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  refreshToken_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  refreshToken_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  refreshToken_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  refreshToken_gte: String
+
+  """
+  All values containing the given string.
+  """
+  refreshToken_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  refreshToken_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  refreshToken_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  refreshToken_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  refreshToken_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  refreshToken_not_ends_with: String
+  user: UserWhereInput
+}
+
+input IntegrationWhereUniqueInput {
+  id: ID
+}
+
 """
 The `Long` scalar type represents non-fractional signed whole numeric values.
 Long can represent values between -(2^63) and 2^63 - 1.
@@ -20,11 +496,21 @@ scalar Long
 
 type Mutation {
   createUser(data: UserCreateInput!): User!
+  createIntegration(data: IntegrationCreateInput!): Integration!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateIntegration(data: IntegrationUpdateInput!, where: IntegrationWhereUniqueInput!): Integration
   deleteUser(where: UserWhereUniqueInput!): User
+  deleteIntegration(where: IntegrationWhereUniqueInput!): Integration
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertIntegration(
+    where: IntegrationWhereUniqueInput!
+    create: IntegrationCreateInput!
+    update: IntegrationUpdateInput!
+  ): Integration!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyIntegrations(data: IntegrationUpdateInput!, where: IntegrationWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyIntegrations(where: IntegrationWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -78,7 +564,17 @@ type Query {
     first: Int
     last: Int
   ): [User]!
+  integrations(
+    where: IntegrationWhereInput
+    orderBy: IntegrationOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [Integration]!
   user(where: UserWhereUniqueInput!): User
+  integration(where: IntegrationWhereUniqueInput!): Integration
   usersConnection(
     where: UserWhereInput
     orderBy: UserOrderByInput
@@ -88,6 +584,15 @@ type Query {
     first: Int
     last: Int
   ): UserConnection!
+  integrationsConnection(
+    where: IntegrationWhereInput
+    orderBy: IntegrationOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): IntegrationConnection!
 
   """
   Fetches an object given its ID
@@ -102,11 +607,23 @@ type Query {
 
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  integration(where: IntegrationSubscriptionWhereInput): IntegrationSubscriptionPayload
 }
 
 type User implements Node {
   id: ID!
+  username: String
   name: String!
+  email: String!
+  integrations(
+    where: IntegrationWhereInput
+    orderBy: IntegrationOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [Integration!]
 }
 
 """
@@ -126,7 +643,21 @@ type UserConnection {
 }
 
 input UserCreateInput {
+  username: String
   name: String!
+  email: String!
+  integrations: IntegrationCreateManyWithoutUserInput
+}
+
+input UserCreateOneWithoutIntegrationsInput {
+  create: UserCreateWithoutIntegrationsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutIntegrationsInput {
+  username: String
+  name: String!
+  email: String!
 }
 
 """
@@ -147,8 +678,12 @@ type UserEdge {
 enum UserOrderByInput {
   id_ASC
   id_DESC
+  username_ASC
+  username_DESC
   name_ASC
   name_DESC
+  email_ASC
+  email_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -157,7 +692,9 @@ enum UserOrderByInput {
 
 type UserPreviousValues {
   id: ID!
+  username: String
   name: String!
+  email: String!
 }
 
 type UserSubscriptionPayload {
@@ -206,7 +743,29 @@ input UserSubscriptionWhereInput {
 }
 
 input UserUpdateInput {
+  username: String
   name: String
+  email: String
+  integrations: IntegrationUpdateManyWithoutUserInput
+}
+
+input UserUpdateOneWithoutIntegrationsInput {
+  create: UserCreateWithoutIntegrationsInput
+  connect: UserWhereUniqueInput
+  delete: Boolean
+  update: UserUpdateWithoutIntegrationsDataInput
+  upsert: UserUpsertWithoutIntegrationsInput
+}
+
+input UserUpdateWithoutIntegrationsDataInput {
+  username: String
+  name: String
+  email: String
+}
+
+input UserUpsertWithoutIntegrationsInput {
+  update: UserUpdateWithoutIntegrationsDataInput!
+  create: UserCreateWithoutIntegrationsInput!
 }
 
 input UserWhereInput {
@@ -290,6 +849,72 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   id_not_ends_with: ID
+  username: String
+
+  """
+  All values that are not equal to given value.
+  """
+  username_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  username_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  username_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  username_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  username_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  username_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  username_gte: String
+
+  """
+  All values containing the given string.
+  """
+  username_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  username_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  username_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  username_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  username_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  username_not_ends_with: String
   name: String
 
   """
@@ -356,8 +981,79 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   name_not_ends_with: String
+  email: String
+
+  """
+  All values that are not equal to given value.
+  """
+  email_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  email_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  email_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  email_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  email_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  email_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  email_gte: String
+
+  """
+  All values containing the given string.
+  """
+  email_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  email_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  email_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  email_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  email_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  email_not_ends_with: String
+  integrations_every: IntegrationWhereInput
+  integrations_some: IntegrationWhereInput
+  integrations_none: IntegrationWhereInput
 }
 
 input UserWhereUniqueInput {
   id: ID
+  username: String
+  email: String
 }

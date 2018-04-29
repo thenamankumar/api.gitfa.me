@@ -1,15 +1,13 @@
-import path from 'path';
+import 'babel-polyfill';
 import { GraphQLServer } from '@fabien0102/graphql-yoga';
-import { Prisma } from 'prisma-binding';
 import { ApolloEngine } from 'apollo-engine';
 import compression from 'compression';
 import Raven from 'raven';
 import cors from 'cors';
+import _ from './env';
 import resolvers from './resolvers/';
-
-require('dotenv').config({
-  path: path.resolve(process.cwd(), process.env.NODE_ENV === 'production' ? 'env/prod.env' : 'env/dev.env'),
-});
+import dbBinding from './utils/dbBinding';
+import passport from './passport/passportHandler';
 
 // server port
 const port = process.env.port || 4000;
@@ -20,12 +18,7 @@ const server = new GraphQLServer({
   resolvers,
   context: req => ({
     ...req,
-    db: new Prisma({
-      typeDefs: 'app/database/api.graphql', // prisma generated db api schema
-      endpoint: `http://localhost:4466/${process.env.DB_API_NAME}/${process.env.DB_API_STAGE}`,
-      secret: process.env.DB_API_SECRET, // secret for db api auth
-      debug: true,
-    }),
+    db: dbBinding(),
   }),
 });
 
@@ -50,6 +43,24 @@ const serverOptions = {
 server.express.use(cors(serverOptions.cors));
 // enable gzip compression
 server.express.use(compression());
+
+// initiate passport
+server.express.use(passport.initialize());
+server.express.use(passport.session());
+
+// github auth routes
+server.express.get(
+  '/auth/github',
+  passport.authenticate('github', { scope: ['read:user', 'user:email', 'read:org', 'read:discussion'] }),
+);
+server.express.get(
+  '/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  (req, res) => {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  },
+);
 
 if (process.env.NODE_ENV === 'production') {
   // initiate sentry on production

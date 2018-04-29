@@ -1,4 +1,21 @@
 type User {
   id: ID! @unique
+  username: String @unique
   name: String!
+  email: String! @unique
+  integrations: [Integration!]! @relation(name: "UserIntegration")
+}
+
+type Integration {
+  id: ID! @unique
+  type: IntegrationType!
+  uid: String!
+  accessToken: String!
+  refreshToken: String
+  user: User! @relation(name: "UserIntegration")
+}
+
+enum IntegrationType {
+  TWITTER
+  GITHUB
 }
