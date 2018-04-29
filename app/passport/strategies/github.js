@@ -10,11 +10,6 @@ export default new GitHubStrategy(
   },
   async (accessToken, refreshToken, profile, done) => {
     const profileData = profile._json;
-    console.log('statergy');
-    const userPayload = `{
-        id
-        username
-      }`;
     let user;
     /*
     There are 3 cases:
@@ -33,6 +28,7 @@ export default new GitHubStrategy(
         },
         `{
           id
+          username
           email
           integrations {
             type
@@ -51,7 +47,10 @@ export default new GitHubStrategy(
               case 2 - this github integration
               get present user data and return
             */
-            user = await db.query.user({ where: { id: presentUser.id } }, userPayload);
+            user = {
+              id: presentUser.id,
+              username: presentUser.username,
+            };
           } else {
             /*
               case 3 - another github integration
@@ -67,17 +66,25 @@ export default new GitHubStrategy(
             case 4 - no github integration
             add this integration and return user data
           */
-          const newIntegration = await db.mutation.createIntegration({
-            data: {
-              type: 'GITHUB',
-              uid: profileData.id,
-              accessToken,
-              refreshToken,
-              user: { connect: { id: presentUser.id } },
+          const newIntegration = await db.mutation.createIntegration(
+            {
+              data: {
+                type: 'GITHUB',
+                uid: profileData.id,
+                accessToken,
+                refreshToken,
+                user: { connect: { id: presentUser.id } },
+              },
             },
-          });
+            `{
+              user {
+                id
+                username
+              }
+            }`,
+          );
 
-          user = newIntegration.then(() => db.query.user({ where: { id: presentUser.id } }, userPayload));
+          user = newIntegration.user; // eslint-disable-line
         }
       } else {
         /*
@@ -92,7 +99,10 @@ export default new GitHubStrategy(
               integrations: { create: { type: 'GITHUB', uid: profileData.id, accessToken, refreshToken } },
             },
           },
-          userPayload,
+          `{
+            id
+            username
+          }`,
         );
       }
 
