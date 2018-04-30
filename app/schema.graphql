@@ -1,9 +1,7 @@
+directive @isAuthenticated on QUERY | MUTATION | SUBSCRIPTION | FIELD
+
 # import User from "./models/User.graphql"
 
 type Query {
   user(id: ID!): User
-}
-
-type Mutation {
-  createUser(name: String!): User!
 }

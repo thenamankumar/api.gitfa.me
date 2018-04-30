@@ -6,9 +6,11 @@ import Raven from 'raven';
 import cors from 'cors';
 import _ from './env';
 import resolvers from './resolvers/';
+import directiveResolvers from './directives';
 import dbBinding from './utils/dbBinding';
 import passport from './passport/passportHandler';
-import generateToken from './utils/generateToken';
+import generateToken from './utils/signToken';
+import verifyToken from './utils/verifyToken';
 
 // server port
 const port = process.env.port || 4000;
@@ -17,8 +19,11 @@ const port = process.env.port || 4000;
 const server = new GraphQLServer({
   typeDefs: 'app/schema.graphql', // application api schema
   resolvers,
+  directiveResolvers,
   context: req => ({
     ...req,
+    // verify request jwt token and add user payload to context
+    user: verifyToken(req.request.headers.authorization),
     db: dbBinding(),
   }),
 });
