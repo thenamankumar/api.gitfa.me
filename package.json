@@ -11,7 +11,7 @@
     "dev": "NODE_ENV=development nodemon --exec npm-run-all --parallel start playground",
     "playground": "graphql playground --dotenv ./env/dev.env",
     "prisma": "prisma deploy --env-file ./env/prod.env",
-    "prisma-dev": "prisma deploy -f --env-file ./env/dev.env",
+    "prisma-dev": "prisma deploy --env-file ./env/dev.env",
     "precommit": "lint-staged",
     "format": "prettier --write \"app/**/*.{js,json,graphql}\""
   },
@@ -28,6 +28,7 @@
     "passport": "^0.4.0",
     "passport-github2": "^0.1.11",
     "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
     "prisma-binding": "^1.5.17",
     "raven": "^2.6.0"
   },

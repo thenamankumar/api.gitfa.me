@@ -4,16 +4,15 @@ type User {
   name: String!
   email: String! @unique
   password: String
-  integrations: [Integration!]! @relation(name: "UserIntegration")
+  integrations: [Integration!]! @relation(name: "SocialIntegration", onDelete: CASCADE)
 }
 
 type Integration {
   id: ID! @unique
   type: IntegrationType!
   uid: String!
-  accessToken: String!
-  refreshToken: String
-  user: User! @relation(name: "UserIntegration")
+  data: Json
+  user: User! @relation(name: "SocialIntegration", onDelete: SET_NULL)
 }
 
 enum IntegrationType {

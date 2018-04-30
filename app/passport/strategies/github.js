@@ -71,8 +71,10 @@ export default new Strategy(
               data: {
                 type: 'GITHUB',
                 uid: profileData.id,
-                accessToken,
-                refreshToken,
+                data: {
+                  accessToken,
+                  refreshToken,
+                },
                 user: { connect: { id: presentUser.id } },
               },
             },
@@ -96,7 +98,7 @@ export default new Strategy(
             data: {
               name: profileData.name,
               email: profileData.email,
-              integrations: { create: { type: 'GITHUB', uid: profileData.id, accessToken, refreshToken } },
+              integrations: { create: { type: 'GITHUB', uid: profileData.id, data: { accessToken, refreshToken } } },
             },
           },
           `{

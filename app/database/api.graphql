@@ -1,5 +1,5 @@
 # source: http://localhost:4466/sharecake/dev
-# timestamp: Sat Apr 28 2018 10:22:05 GMT+0530 (IST)
+# timestamp: Mon Apr 30 2018 15:48:33 GMT+0530 (IST)
 
 type AggregateIntegration {
   count: Int!
@@ -20,8 +20,7 @@ type Integration implements Node {
   id: ID!
   type: IntegrationType!
   uid: String!
-  accessToken: String!
-  refreshToken: String
+  data: Json
   user(where: UserWhereInput): User!
 }
 
@@ -44,8 +43,7 @@ type IntegrationConnection {
 input IntegrationCreateInput {
   type: IntegrationType!
   uid: String!
-  accessToken: String!
-  refreshToken: String
+  data: Json
   user: UserCreateOneWithoutIntegrationsInput!
 }
 
@@ -57,8 +55,7 @@ input IntegrationCreateManyWithoutUserInput {
 input IntegrationCreateWithoutUserInput {
   type: IntegrationType!
   uid: String!
-  accessToken: String!
-  refreshToken: String
+  data: Json
 }
 
 """
@@ -83,10 +80,8 @@ enum IntegrationOrderByInput {
   type_DESC
   uid_ASC
   uid_DESC
-  accessToken_ASC
-  accessToken_DESC
-  refreshToken_ASC
-  refreshToken_DESC
+  data_ASC
+  data_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -97,8 +92,7 @@ type IntegrationPreviousValues {
   id: ID!
   type: IntegrationType!
   uid: String!
-  accessToken: String!
-  refreshToken: String
+  data: Json
 }
 
 type IntegrationSubscriptionPayload {
@@ -154,8 +148,7 @@ enum IntegrationType {
 input IntegrationUpdateInput {
   type: IntegrationType
   uid: String
-  accessToken: String
-  refreshToken: String
+  data: Json
   user: UserUpdateOneWithoutIntegrationsInput
 }
 
@@ -171,8 +164,7 @@ input IntegrationUpdateManyWithoutUserInput {
 input IntegrationUpdateWithoutUserDataInput {
   type: IntegrationType
   uid: String
-  accessToken: String
-  refreshToken: String
+  data: Json
 }
 
 input IntegrationUpdateWithWhereUniqueWithoutUserInput {
@@ -349,144 +341,17 @@ input IntegrationWhereInput {
   All values not ending with the given string.
   """
   uid_not_ends_with: String
-  accessToken: String
-
-  """
-  All values that are not equal to given value.
-  """
-  accessToken_not: String
-
-  """
-  All values that are contained in given list.
-  """
-  accessToken_in: [String!]
-
-  """
-  All values that are not contained in given list.
-  """
-  accessToken_not_in: [String!]
-
-  """
-  All values less than the given value.
-  """
-  accessToken_lt: String
-
-  """
-  All values less than or equal the given value.
-  """
-  accessToken_lte: String
-
-  """
-  All values greater than the given value.
-  """
-  accessToken_gt: String
-
-  """
-  All values greater than or equal the given value.
-  """
-  accessToken_gte: String
-
-  """
-  All values containing the given string.
-  """
-  accessToken_contains: String
-
-  """
-  All values not containing the given string.
-  """
-  accessToken_not_contains: String
-
-  """
-  All values starting with the given string.
-  """
-  accessToken_starts_with: String
-
-  """
-  All values not starting with the given string.
-  """
-  accessToken_not_starts_with: String
-
-  """
-  All values ending with the given string.
-  """
-  accessToken_ends_with: String
-
-  """
-  All values not ending with the given string.
-  """
-  accessToken_not_ends_with: String
-  refreshToken: String
-
-  """
-  All values that are not equal to given value.
-  """
-  refreshToken_not: String
-
-  """
-  All values that are contained in given list.
-  """
-  refreshToken_in: [String!]
-
-  """
-  All values that are not contained in given list.
-  """
-  refreshToken_not_in: [String!]
-
-  """
-  All values less than the given value.
-  """
-  refreshToken_lt: String
-
-  """
-  All values less than or equal the given value.
-  """
-  refreshToken_lte: String
-
-  """
-  All values greater than the given value.
-  """
-  refreshToken_gt: String
-
-  """
-  All values greater than or equal the given value.
-  """
-  refreshToken_gte: String
-
-  """
-  All values containing the given string.
-  """
-  refreshToken_contains: String
-
-  """
-  All values not containing the given string.
-  """
-  refreshToken_not_contains: String
-
-  """
-  All values starting with the given string.
-  """
-  refreshToken_starts_with: String
-
-  """
-  All values not starting with the given string.
-  """
-  refreshToken_not_starts_with: String
-
-  """
-  All values ending with the given string.
-  """
-  refreshToken_ends_with: String
-
-  """
-  All values not ending with the given string.
-  """
-  refreshToken_not_ends_with: String
   user: UserWhereInput
 }
 
 input IntegrationWhereUniqueInput {
   id: ID
 }
+
+"""
+Raw JSON value
+"""
+scalar Json
 
 """
 The `Long` scalar type represents non-fractional signed whole numeric values.
@@ -615,6 +480,7 @@ type User implements Node {
   username: String
   name: String!
   email: String!
+  password: String
   integrations(
     where: IntegrationWhereInput
     orderBy: IntegrationOrderByInput
@@ -646,6 +512,7 @@ input UserCreateInput {
   username: String
   name: String!
   email: String!
+  password: String
   integrations: IntegrationCreateManyWithoutUserInput
 }
 
@@ -658,6 +525,7 @@ input UserCreateWithoutIntegrationsInput {
   username: String
   name: String!
   email: String!
+  password: String
 }
 
 """
@@ -684,6 +552,8 @@ enum UserOrderByInput {
   name_DESC
   email_ASC
   email_DESC
+  password_ASC
+  password_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -695,6 +565,7 @@ type UserPreviousValues {
   username: String
   name: String!
   email: String!
+  password: String
 }
 
 type UserSubscriptionPayload {
@@ -746,6 +617,7 @@ input UserUpdateInput {
   username: String
   name: String
   email: String
+  password: String
   integrations: IntegrationUpdateManyWithoutUserInput
 }
 
@@ -761,6 +633,7 @@ input UserUpdateWithoutIntegrationsDataInput {
   username: String
   name: String
   email: String
+  password: String
 }
 
 input UserUpsertWithoutIntegrationsInput {
@@ -1047,6 +920,72 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   email_not_ends_with: String
+  password: String
+
+  """
+  All values that are not equal to given value.
+  """
+  password_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  password_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  password_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  password_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  password_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  password_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  password_gte: String
+
+  """
+  All values containing the given string.
+  """
+  password_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  password_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  password_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  password_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  password_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  password_not_ends_with: String
   integrations_every: IntegrationWhereInput
   integrations_some: IntegrationWhereInput
   integrations_none: IntegrationWhereInput
