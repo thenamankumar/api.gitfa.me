@@ -1,8 +1,8 @@
 import Raven from 'raven';
-import { Strategy as GitHubStrategy } from 'passport-github2';
+import { Strategy } from 'passport-github2';
 import dbBinding from '../../utils/dbBinding';
 
-export default new GitHubStrategy(
+export default new Strategy(
   {
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,

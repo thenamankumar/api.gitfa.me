@@ -4,12 +4,12 @@ import { ApolloEngine } from 'apollo-engine';
 import compression from 'compression';
 import Raven from 'raven';
 import cors from 'cors';
-import _ from './env';
+import _ from './env'; // import before others
+import { authRouter } from './router/';
 import resolvers from './resolvers/';
 import directiveResolvers from './directives';
 import dbBinding from './utils/dbBinding';
 import passport from './passport/passportHandler';
-import generateToken from './utils/signToken';
 import verifyToken from './utils/verifyToken';
 
 // server port
@@ -52,22 +52,9 @@ server.express.use(compression());
 
 // initiate passport
 server.express.use(passport.initialize());
-server.express.use(passport.session());
 
-// github auth routes
-server.express.get(
-  '/auth/github',
-  passport.authenticate('github', { scope: ['read:user', 'user:email', 'read:org', 'read:discussion'] }),
-);
-server.express.get('/auth/github/callback', passport.authenticate('github'), (req, res) => {
-  if (req.user.status === 200) {
-    // return token on successful auth
-    res.json({ status: 200, token: generateToken(req.user.data) });
-  } else {
-    // return error object
-    res.json(req.user);
-  }
-});
+// add auth routes
+server.express.use('/auth', authRouter);
 
 if (process.env.NODE_ENV === 'production') {
   // initiate sentry on production
@@ -95,7 +82,7 @@ if (process.env.NODE_ENV === 'production') {
   // start server without apollo engine
   server.start(
     {
-      port,
+      port, // default 4000
       cors: serverOptions.cors, // allow cors from graphql
     },
     () => console.log(`Server is running on http://localhost:${port}`),

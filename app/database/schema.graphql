@@ -3,6 +3,7 @@ type User {
   username: String @unique
   name: String!
   email: String! @unique
+  password: String
   integrations: [Integration!]! @relation(name: "UserIntegration")
 }
 
