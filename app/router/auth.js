@@ -14,6 +14,10 @@ const authCallbackHandler = async (req, res) => {
   }
 };
 
+// twitter auth routes
+authRouter.get('/twitter', passport.authenticate('twitter'));
+authRouter.get('/twitter/callback', passport.authenticate('twitter'), authCallbackHandler);
+
 // github auth routes
 authRouter.get(
   '/github',

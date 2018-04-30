@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import { GraphQLServer } from '@fabien0102/graphql-yoga';
 import { ApolloEngine } from 'apollo-engine';
 import compression from 'compression';
+import session from 'express-session';
 import Raven from 'raven';
 import cors from 'cors';
 import _ from './env'; // import before others
@@ -49,10 +50,17 @@ const serverOptions = {
 server.express.use(cors(serverOptions.cors));
 // enable gzip compression
 server.express.use(compression());
-
+// express session
+server.express.use(
+  session({
+    secret: process.env.API_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  }),
+);
 // initiate passport
 server.express.use(passport.initialize());
-
+server.express.use(passport.session());
 // add auth routes
 server.express.use('/auth', authRouter);
 

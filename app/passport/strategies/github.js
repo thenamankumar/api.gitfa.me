@@ -39,10 +39,10 @@ export default new Strategy(
 
       if (presentUser) {
         // account exists either with github integration or not
-        const presentGithubIntegration = (presentUser.integrations || []).find(({ type }) => type === 'GITHUB');
+        const presentIntegration = (presentUser.integrations || []).find(({ type }) => type === 'GITHUB');
 
-        if (presentGithubIntegration) {
-          if (presentGithubIntegration.uid === profileData.id.toString()) {
+        if (presentIntegration) {
+          if (presentIntegration.uid === profileData.id.toString()) {
             /*
               case 2 - this github integration
               get present user data and return
