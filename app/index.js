@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import { GraphQLServer } from '@fabien0102/graphql-yoga';
+import { GraphQLServer } from 'graphql-yoga';
 import { ApolloEngine } from 'apollo-engine';
 import compression from 'compression';
 import session from 'express-session';
