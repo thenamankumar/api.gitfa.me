@@ -23,8 +23,10 @@
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "graphql-yoga": "^1.13.1",
+    "node-fetch": "^2.1.2",
     "prisma-binding": "^1.5.17",
-    "raven": "^2.6.0"
+    "raven": "^2.6.0",
+    "winston": "^2.4.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -44,6 +46,6 @@
     "nodemon": "^1.17.3",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.12.1",
-    "prisma": "^1.7.3"
+    "prisma": "^1.7.4"
   }
 }

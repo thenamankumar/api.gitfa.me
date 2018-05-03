@@ -1,0 +1,67 @@
+import fetchData from '../../actions/fetchData';
+
+export default async (parent, { username, fresh }, { db }, info) => {
+  // find user data in db
+  const findUser = await db.query.user({ where: { username } }, `{ time }`);
+  const updateTimeThreshold = 24 * 60 * 60 * 1000; // 1 day
+  let result; // final result
+
+  if (findUser && (!fresh || new Date() - new Date(findUser.time) <= updateTimeThreshold)) {
+    /*
+      return data preset in db if fresh data not requested
+      or if requested then data is already latest
+    */
+    result = await db.query.user({ where: { username } }, info);
+  } else if (!findUser || (fresh && new Date() - new Date(findUser.time) > updateTimeThreshold)) {
+    /*
+      fetch new data for:
+      1) user not found in db
+      2) user data is old and requested fresh
+    */
+
+    if (!findUser) {
+      console.log(`Data for user ${username} not present.`);
+    } else {
+      console.log(`Fresh data requested for ${username}.`);
+    }
+    // fetch fresh user data
+    const {
+      status,
+      data: { repos, ...profileData },
+      message,
+    } = await fetchData(username);
+
+    if (status === 200) {
+      // fresh data fetch successful
+      const addUserDataPayload = {
+        ...profileData,
+        repos: {
+          create: repos.map(({ languages, ...rest }) => ({
+            ...rest,
+            languages: {
+              create: languages,
+            },
+          })),
+        },
+      };
+
+      if (findUser) {
+        /*
+          temporarily update mutation not working
+          delete and create new user
+        */
+        result = await db.mutation
+          .deleteUser({ where: { username } })
+          .then(() => db.mutation.createUser({ data: addUserDataPayload }, info));
+      } else {
+        result = await db.mutation.createUser({ data: addUserDataPayload }, info);
+      }
+    } else {
+      // fresh data fetch unsuccessful
+      return { status, message };
+    }
+  }
+
+  // return final result
+  return result;
+};

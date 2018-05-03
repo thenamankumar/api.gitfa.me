@@ -1,0 +1,1895 @@
+# source: http://localhost:4466/gitfame/dev
+# timestamp: Thu May 03 2018 14:08:24 GMT+0530 (IST)
+
+type AggregateLanguage {
+  count: Int!
+}
+
+type AggregateRepo {
+  count: Int!
+}
+
+type AggregateUser {
+  count: Int!
+}
+
+type BatchPayload {
+  """
+  The number of nodes that have been affected by the Batch operation.
+  """
+  count: Long!
+}
+
+type Language {
+  name: String!
+  color: String
+}
+
+"""
+A connection to a list of items.
+"""
+type LanguageConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [LanguageEdge]!
+  aggregate: AggregateLanguage!
+}
+
+input LanguageCreateInput {
+  name: String!
+  color: String
+}
+
+input LanguageCreateManyInput {
+  create: [LanguageCreateInput!]
+}
+
+"""
+An edge in a connection.
+"""
+type LanguageEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Language!
+
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum LanguageOrderByInput {
+  name_ASC
+  name_DESC
+  color_ASC
+  color_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type LanguagePreviousValues {
+  name: String!
+  color: String
+}
+
+type LanguageSubscriptionPayload {
+  mutation: MutationType!
+  node: Language
+  updatedFields: [String!]
+  previousValues: LanguagePreviousValues
+}
+
+input LanguageSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [LanguageSubscriptionWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [LanguageSubscriptionWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [LanguageSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: LanguageWhereInput
+}
+
+input LanguageUpdateInput {
+  name: String
+  color: String
+}
+
+input LanguageUpdateManyInput {
+  create: [LanguageCreateInput!]
+}
+
+input LanguageWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [LanguageWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [LanguageWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [LanguageWhereInput!]
+  name: String
+
+  """
+  All values that are not equal to given value.
+  """
+  name_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  name_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  name_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  name_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  name_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  name_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  name_gte: String
+
+  """
+  All values containing the given string.
+  """
+  name_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  name_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  name_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  name_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  name_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  name_not_ends_with: String
+  color: String
+
+  """
+  All values that are not equal to given value.
+  """
+  color_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  color_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  color_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  color_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  color_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  color_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  color_gte: String
+
+  """
+  All values containing the given string.
+  """
+  color_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  color_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  color_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  color_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  color_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  color_not_ends_with: String
+}
+
+"""
+The `Long` scalar type represents non-fractional signed whole numeric values.
+Long can represent values between -(2^63) and 2^63 - 1.
+"""
+scalar Long
+
+type Mutation {
+  createUser(data: UserCreateInput!): User!
+  createRepo(data: RepoCreateInput!): Repo!
+  createLanguage(data: LanguageCreateInput!): Language!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  deleteUser(where: UserWhereUniqueInput!): User
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyRepoes(data: RepoUpdateInput!, where: RepoWhereInput): BatchPayload!
+  updateManyLanguages(data: LanguageUpdateInput!, where: LanguageWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyRepoes(where: RepoWhereInput): BatchPayload!
+  deleteManyLanguages(where: LanguageWhereInput): BatchPayload!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+"""
+An object with an ID
+"""
+interface Node {
+  """
+  The id of the object.
+  """
+  id: ID!
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
+
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+}
+
+type Query {
+  users(
+    where: UserWhereInput
+    orderBy: UserOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [User]!
+  repoes(
+    where: RepoWhereInput
+    orderBy: RepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [Repo]!
+  languages(
+    where: LanguageWhereInput
+    orderBy: LanguageOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [Language]!
+  user(where: UserWhereUniqueInput!): User
+  usersConnection(
+    where: UserWhereInput
+    orderBy: UserOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): UserConnection!
+  repoesConnection(
+    where: RepoWhereInput
+    orderBy: RepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): RepoConnection!
+  languagesConnection(
+    where: LanguageWhereInput
+    orderBy: LanguageOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): LanguageConnection!
+
+  """
+  Fetches an object given its ID
+  """
+  node(
+    """
+    The ID of an object
+    """
+    id: ID!
+  ): Node
+}
+
+type Repo {
+  user(where: UserWhereInput): User!
+  branch: String
+  forks: Int
+  fullName: String
+  isFork: Boolean
+  languages(
+    where: LanguageWhereInput
+    orderBy: LanguageOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [Language!]
+  size: Int
+  stars: Int
+  url: String
+  userCommits: Int
+  watchers: Int
+}
+
+"""
+A connection to a list of items.
+"""
+type RepoConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [RepoEdge]!
+  aggregate: AggregateRepo!
+}
+
+input RepoCreateInput {
+  branch: String
+  forks: Int
+  fullName: String
+  isFork: Boolean
+  size: Int
+  stars: Int
+  url: String
+  userCommits: Int
+  watchers: Int
+  user: UserCreateOneWithoutReposInput!
+  languages: LanguageCreateManyInput
+}
+
+input RepoCreateManyWithoutUserInput {
+  create: [RepoCreateWithoutUserInput!]
+}
+
+input RepoCreateWithoutUserInput {
+  branch: String
+  forks: Int
+  fullName: String
+  isFork: Boolean
+  size: Int
+  stars: Int
+  url: String
+  userCommits: Int
+  watchers: Int
+  languages: LanguageCreateManyInput
+}
+
+"""
+An edge in a connection.
+"""
+type RepoEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: Repo!
+
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum RepoOrderByInput {
+  branch_ASC
+  branch_DESC
+  forks_ASC
+  forks_DESC
+  fullName_ASC
+  fullName_DESC
+  isFork_ASC
+  isFork_DESC
+  size_ASC
+  size_DESC
+  stars_ASC
+  stars_DESC
+  url_ASC
+  url_DESC
+  userCommits_ASC
+  userCommits_DESC
+  watchers_ASC
+  watchers_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type RepoPreviousValues {
+  branch: String
+  forks: Int
+  fullName: String
+  isFork: Boolean
+  size: Int
+  stars: Int
+  url: String
+  userCommits: Int
+  watchers: Int
+}
+
+type RepoSubscriptionPayload {
+  mutation: MutationType!
+  node: Repo
+  updatedFields: [String!]
+  previousValues: RepoPreviousValues
+}
+
+input RepoSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [RepoSubscriptionWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [RepoSubscriptionWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [RepoSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: RepoWhereInput
+}
+
+input RepoUpdateInput {
+  branch: String
+  forks: Int
+  fullName: String
+  isFork: Boolean
+  size: Int
+  stars: Int
+  url: String
+  userCommits: Int
+  watchers: Int
+  user: UserUpdateOneWithoutReposInput
+  languages: LanguageUpdateManyInput
+}
+
+input RepoUpdateManyWithoutUserInput {
+  create: [RepoCreateWithoutUserInput!]
+}
+
+input RepoWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [RepoWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [RepoWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [RepoWhereInput!]
+  branch: String
+
+  """
+  All values that are not equal to given value.
+  """
+  branch_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  branch_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  branch_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  branch_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  branch_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  branch_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  branch_gte: String
+
+  """
+  All values containing the given string.
+  """
+  branch_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  branch_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  branch_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  branch_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  branch_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  branch_not_ends_with: String
+  forks: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  forks_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  forks_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  forks_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  forks_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  forks_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  forks_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  forks_gte: Int
+  fullName: String
+
+  """
+  All values that are not equal to given value.
+  """
+  fullName_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  fullName_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  fullName_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  fullName_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  fullName_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  fullName_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  fullName_gte: String
+
+  """
+  All values containing the given string.
+  """
+  fullName_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  fullName_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  fullName_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  fullName_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  fullName_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  fullName_not_ends_with: String
+  isFork: Boolean
+
+  """
+  All values that are not equal to given value.
+  """
+  isFork_not: Boolean
+  size: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  size_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  size_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  size_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  size_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  size_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  size_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  size_gte: Int
+  stars: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  stars_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  stars_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  stars_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  stars_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  stars_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  stars_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  stars_gte: Int
+  url: String
+
+  """
+  All values that are not equal to given value.
+  """
+  url_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  url_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  url_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  url_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  url_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  url_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  url_gte: String
+
+  """
+  All values containing the given string.
+  """
+  url_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  url_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  url_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  url_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  url_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  url_not_ends_with: String
+  userCommits: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  userCommits_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  userCommits_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  userCommits_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  userCommits_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  userCommits_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  userCommits_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  userCommits_gte: Int
+  watchers: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  watchers_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  watchers_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  watchers_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  watchers_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  watchers_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  watchers_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  watchers_gte: Int
+  user: UserWhereInput
+  languages_every: LanguageWhereInput
+  languages_some: LanguageWhereInput
+  languages_none: LanguageWhereInput
+}
+
+type Subscription {
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  repo(where: RepoSubscriptionWhereInput): RepoSubscriptionPayload
+  language(where: LanguageSubscriptionWhereInput): LanguageSubscriptionPayload
+}
+
+type User {
+  bio: String
+  followers: Int
+  following: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  publicRepos: Int
+  repos(
+    where: RepoWhereInput
+    orderBy: RepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [Repo!]
+  time: String!
+  uid: String!
+  url: String
+  username: String!
+}
+
+"""
+A connection to a list of items.
+"""
+type UserConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [UserEdge]!
+  aggregate: AggregateUser!
+}
+
+input UserCreateInput {
+  bio: String
+  followers: Int
+  following: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  publicRepos: Int
+  time: String!
+  uid: String!
+  url: String
+  username: String!
+  repos: RepoCreateManyWithoutUserInput
+}
+
+input UserCreateOneWithoutReposInput {
+  create: UserCreateWithoutReposInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutReposInput {
+  bio: String
+  followers: Int
+  following: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  publicRepos: Int
+  time: String!
+  uid: String!
+  url: String
+  username: String!
+}
+
+"""
+An edge in a connection.
+"""
+type UserEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: User!
+
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum UserOrderByInput {
+  bio_ASC
+  bio_DESC
+  followers_ASC
+  followers_DESC
+  following_ASC
+  following_DESC
+  name_ASC
+  name_DESC
+  pic_ASC
+  pic_DESC
+  profileCreatedAt_ASC
+  profileCreatedAt_DESC
+  publicRepos_ASC
+  publicRepos_DESC
+  time_ASC
+  time_DESC
+  uid_ASC
+  uid_DESC
+  url_ASC
+  url_DESC
+  username_ASC
+  username_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type UserPreviousValues {
+  bio: String
+  followers: Int
+  following: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  publicRepos: Int
+  time: String!
+  uid: String!
+  url: String
+  username: String!
+}
+
+type UserSubscriptionPayload {
+  mutation: MutationType!
+  node: User
+  updatedFields: [String!]
+  previousValues: UserPreviousValues
+}
+
+input UserSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [UserSubscriptionWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [UserSubscriptionWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [UserSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: UserWhereInput
+}
+
+input UserUpdateInput {
+  bio: String
+  followers: Int
+  following: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  publicRepos: Int
+  time: String
+  uid: String
+  url: String
+  username: String
+  repos: RepoUpdateManyWithoutUserInput
+}
+
+input UserUpdateOneWithoutReposInput {
+  create: UserCreateWithoutReposInput
+  connect: UserWhereUniqueInput
+  delete: Boolean
+  update: UserUpdateWithoutReposDataInput
+  upsert: UserUpsertWithoutReposInput
+}
+
+input UserUpdateWithoutReposDataInput {
+  bio: String
+  followers: Int
+  following: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  publicRepos: Int
+  time: String
+  uid: String
+  url: String
+  username: String
+}
+
+input UserUpsertWithoutReposInput {
+  update: UserUpdateWithoutReposDataInput!
+  create: UserCreateWithoutReposInput!
+}
+
+input UserWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [UserWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [UserWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [UserWhereInput!]
+  bio: String
+
+  """
+  All values that are not equal to given value.
+  """
+  bio_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  bio_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  bio_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  bio_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  bio_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  bio_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  bio_gte: String
+
+  """
+  All values containing the given string.
+  """
+  bio_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  bio_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  bio_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  bio_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  bio_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  bio_not_ends_with: String
+  followers: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  followers_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  followers_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  followers_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  followers_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  followers_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  followers_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  followers_gte: Int
+  following: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  following_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  following_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  following_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  following_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  following_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  following_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  following_gte: Int
+  name: String
+
+  """
+  All values that are not equal to given value.
+  """
+  name_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  name_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  name_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  name_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  name_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  name_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  name_gte: String
+
+  """
+  All values containing the given string.
+  """
+  name_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  name_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  name_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  name_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  name_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  name_not_ends_with: String
+  pic: String
+
+  """
+  All values that are not equal to given value.
+  """
+  pic_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  pic_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  pic_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  pic_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  pic_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  pic_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  pic_gte: String
+
+  """
+  All values containing the given string.
+  """
+  pic_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  pic_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  pic_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  pic_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  pic_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  pic_not_ends_with: String
+  profileCreatedAt: String
+
+  """
+  All values that are not equal to given value.
+  """
+  profileCreatedAt_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  profileCreatedAt_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  profileCreatedAt_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  profileCreatedAt_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  profileCreatedAt_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  profileCreatedAt_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  profileCreatedAt_gte: String
+
+  """
+  All values containing the given string.
+  """
+  profileCreatedAt_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  profileCreatedAt_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  profileCreatedAt_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  profileCreatedAt_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  profileCreatedAt_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  profileCreatedAt_not_ends_with: String
+  publicRepos: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  publicRepos_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  publicRepos_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  publicRepos_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  publicRepos_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  publicRepos_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  publicRepos_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  publicRepos_gte: Int
+  time: String
+
+  """
+  All values that are not equal to given value.
+  """
+  time_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  time_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  time_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  time_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  time_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  time_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  time_gte: String
+
+  """
+  All values containing the given string.
+  """
+  time_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  time_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  time_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  time_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  time_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  time_not_ends_with: String
+  uid: String
+
+  """
+  All values that are not equal to given value.
+  """
+  uid_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  uid_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  uid_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  uid_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  uid_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  uid_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  uid_gte: String
+
+  """
+  All values containing the given string.
+  """
+  uid_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  uid_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  uid_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  uid_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  uid_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  uid_not_ends_with: String
+  url: String
+
+  """
+  All values that are not equal to given value.
+  """
+  url_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  url_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  url_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  url_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  url_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  url_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  url_gte: String
+
+  """
+  All values containing the given string.
+  """
+  url_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  url_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  url_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  url_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  url_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  url_not_ends_with: String
+  username: String
+
+  """
+  All values that are not equal to given value.
+  """
+  username_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  username_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  username_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  username_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  username_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  username_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  username_gte: String
+
+  """
+  All values containing the given string.
+  """
+  username_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  username_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  username_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  username_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  username_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  username_not_ends_with: String
+  repos_every: RepoWhereInput
+  repos_some: RepoWhereInput
+  repos_none: RepoWhereInput
+}
+
+input UserWhereUniqueInput {
+  uid: String
+  username: String
+}

@@ -1,3 +1,33 @@
 type User {
-  id: ID!
+  bio: String
+  followers: Int
+  following: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  publicRepos: Int
+  repos: [Repo!]! @relation(name: "UserRepos", onDelete: CASCADE)
+  time: String!
+  uid: String! @unique
+  url: String
+  username: String! @unique
+}
+
+type Repo {
+  user: User! @relation(name: "UserRepos", onDelete: SET_NULL)
+  branch: String
+  forks: Int
+  fullName: String
+  isFork: Boolean
+  languages: [Language!]!
+  size: Int
+  stars: Int
+  url: String
+  userCommits: Int
+  watchers: Int
+}
+
+type Language {
+  name: String!
+  color: String
 }

@@ -1,3 +1,4 @@
-type User {
-  id: ID!
+#import User from './models/User.graphql';
+type Query {
+  user(username: String!, fresh: Boolean): User
 }

@@ -1,0 +1,16 @@
+#import User from './User.graphql';
+#import Language from './Language.graphql';
+
+type Repo {
+  branch: String
+  forks: Int
+  fullName: String
+  isFork: Boolean
+  languages: [Language]
+  size: Int
+  stars: Int
+  url: String
+  user: User!
+  userCommits: Int
+  watchers: Int
+}

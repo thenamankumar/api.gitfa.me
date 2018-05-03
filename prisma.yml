@@ -3,7 +3,7 @@ datamodel: app/database/schema.graphql
 # graphql api secret
 secret: ${env:DB_API_SECRET}
 # endpoint for db graphql api
-endpoint: http://localhost:4466/${env:DB_API_NAME}/${env:DB_API_STAGE}
+endpoint: http://localhost:4400/${env:DB_API_NAME}/${env:DB_API_STAGE}
 # generate db schema after development
 hooks:
   post-deploy:

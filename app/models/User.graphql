@@ -1,0 +1,15 @@
+#import Repo from './Repo.graphql'
+
+type User {
+  bio: String
+  createdAt: String
+  followers: Int
+  following: Int
+  name: String
+  pic: String
+  publicRepos: Int
+  repos: [Repo]
+  uid: String!
+  url: String
+  username: String!
+}

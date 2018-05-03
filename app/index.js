@@ -9,7 +9,7 @@ import _ from './env'; // import before others
 import resolvers from './resolvers/';
 
 // server port
-const port = process.env.port || 3000;
+const port = process.env.port || 4000;
 
 // create a new graphql server
 const server = new GraphQLServer({
@@ -63,7 +63,7 @@ if (process.env.NODE_ENV === 'production') {
   // start server with apollo engine
   engine.listen(
     {
-      port, // default 3000
+      port, // default 4000
       httpServer, // graphql server
       graphqlPaths: ['/'], // graphql api path
     },
@@ -73,7 +73,7 @@ if (process.env.NODE_ENV === 'production') {
   // start server without apollo engine
   server.start(
     {
-      port, // default 3000
+      port, // default 4000
       cors: serverOptions.cors, // allow cors from graphql
     },
     () => console.log(`Server is running on http://localhost:${port}`),
