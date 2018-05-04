@@ -26,7 +26,7 @@ const fetchData = async username => {
     const profile = ((await profileResponse.json()).data || {}).user; // user profile
     if (!profile) {
       // return 404 if user not found on github
-      debugLogs.error(`User non found on github: ${username}`);
+      console.log(`User non found on github: ${username}`);
       return {
         status: 404,
         message: 'User not found',
@@ -41,7 +41,6 @@ const fetchData = async username => {
       name: profile.name,
       pic: profile.avatarUrl,
       profileCreatedAt: profile.createdAt,
-      publicRepos: profile.repositories.totalCount,
       uid: profile.id,
       url: profile.url,
       username: profile.login,

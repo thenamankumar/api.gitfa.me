@@ -29,7 +29,7 @@ const fetchRepos = async (username, uid, endCursor = null) => {
 
   // collection of 20 repos
   const repos = reposData.data.user.repositories.nodes;
-  debugLogs.debug(`Successfully ${repos.length} repos collection ${endCursor} fetched in ${new Date() - startTime}ms`);
+  console.log(`Successfully ${repos.length} repos collection ${endCursor} fetched in ${new Date() - startTime}ms`);
 
   // compile repo data
   return repos.map(repo => ({

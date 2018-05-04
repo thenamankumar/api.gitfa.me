@@ -25,14 +25,12 @@ export default async (parent, { username, fresh }, { db }, info) => {
       console.log(`Fresh data requested for ${username}.`);
     }
     // fetch fresh user data
-    const {
-      status,
-      data: { repos, ...profileData },
-      message,
-    } = await fetchData(username);
+    const { status, data } = await fetchData(username);
 
     if (status === 200) {
       // fresh data fetch successful
+      const { repos, ...profileData } = data;
+
       const addUserDataPayload = {
         ...profileData,
         repos: {
@@ -58,10 +56,16 @@ export default async (parent, { username, fresh }, { db }, info) => {
       }
     } else {
       // fresh data fetch unsuccessful
-      return { status, message };
+      return {
+        status,
+        username,
+      };
     }
   }
 
   // return final result
-  return result;
+  return {
+    ...result,
+    status: 200,
+  };
 };

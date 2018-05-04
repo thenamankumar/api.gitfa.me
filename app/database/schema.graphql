@@ -5,7 +5,6 @@ type User {
   name: String
   pic: String
   profileCreatedAt: String
-  publicRepos: Int
   repos: [Repo!]! @relation(name: "UserRepos", onDelete: CASCADE)
   time: String!
   uid: String! @unique

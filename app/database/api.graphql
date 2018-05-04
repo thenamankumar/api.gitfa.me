@@ -1,5 +1,5 @@
 # source: http://localhost:4466/gitfame/dev
-# timestamp: Thu May 03 2018 14:08:24 GMT+0530 (IST)
+# timestamp: Fri May 04 2018 11:03:51 GMT+0530 (IST)
 
 type AggregateLanguage {
   count: Int!
@@ -1020,7 +1020,6 @@ type User {
   name: String
   pic: String
   profileCreatedAt: String
-  publicRepos: Int
   repos(
     where: RepoWhereInput
     orderBy: RepoOrderByInput
@@ -1059,7 +1058,6 @@ input UserCreateInput {
   name: String
   pic: String
   profileCreatedAt: String
-  publicRepos: Int
   time: String!
   uid: String!
   url: String
@@ -1079,7 +1077,6 @@ input UserCreateWithoutReposInput {
   name: String
   pic: String
   profileCreatedAt: String
-  publicRepos: Int
   time: String!
   uid: String!
   url: String
@@ -1114,8 +1111,6 @@ enum UserOrderByInput {
   pic_DESC
   profileCreatedAt_ASC
   profileCreatedAt_DESC
-  publicRepos_ASC
-  publicRepos_DESC
   time_ASC
   time_DESC
   uid_ASC
@@ -1139,7 +1134,6 @@ type UserPreviousValues {
   name: String
   pic: String
   profileCreatedAt: String
-  publicRepos: Int
   time: String!
   uid: String!
   url: String
@@ -1198,7 +1192,6 @@ input UserUpdateInput {
   name: String
   pic: String
   profileCreatedAt: String
-  publicRepos: Int
   time: String
   uid: String
   url: String
@@ -1221,7 +1214,6 @@ input UserUpdateWithoutReposDataInput {
   name: String
   pic: String
   profileCreatedAt: String
-  publicRepos: Int
   time: String
   uid: String
   url: String
@@ -1584,42 +1576,6 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   profileCreatedAt_not_ends_with: String
-  publicRepos: Int
-
-  """
-  All values that are not equal to given value.
-  """
-  publicRepos_not: Int
-
-  """
-  All values that are contained in given list.
-  """
-  publicRepos_in: [Int!]
-
-  """
-  All values that are not contained in given list.
-  """
-  publicRepos_not_in: [Int!]
-
-  """
-  All values less than the given value.
-  """
-  publicRepos_lt: Int
-
-  """
-  All values less than or equal the given value.
-  """
-  publicRepos_lte: Int
-
-  """
-  All values greater than the given value.
-  """
-  publicRepos_gt: Int
-
-  """
-  All values greater than or equal the given value.
-  """
-  publicRepos_gte: Int
   time: String
 
   """

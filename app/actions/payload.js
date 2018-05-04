@@ -27,9 +27,6 @@ const userPayload = username => ({
         following {
           totalCount
         }
-        repositories {
-          totalCount
-        }
       }
     `,
   variables: `

@@ -2,14 +2,14 @@
 
 type User {
   bio: String
-  createdAt: String
   followers: Int
   following: Int
   name: String
   pic: String
-  publicRepos: Int
+  profileCreatedAt: String
   repos: [Repo]
-  uid: String!
+  status: Int
+  uid: String
   url: String
   username: String!
 }

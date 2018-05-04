@@ -34,8 +34,8 @@ const serverOptions = {
   cors: {
     origin: [
       'https://gitfa.me', // client
-      'http://localhost:4000', // client on local
-      'http://localhost:3000', // graphql playground
+      'http://localhost:4000', // graphql playground
+      'http://localhost:3000', // client on local
     ],
     methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
