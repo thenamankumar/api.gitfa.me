@@ -48,9 +48,14 @@ export default async (parent, { username, fresh }, { db }, info) => {
           temporarily update mutation not working
           delete and create new user
         */
-        result = await db.mutation
-          .deleteUser({ where: { username } })
-          .then(() => db.mutation.createUser({ data: addUserDataPayload }, info));
+        result = await db.mutation.upsertUser(
+          {
+            where: { username },
+            create: addUserDataPayload,
+            update: addUserDataPayload,
+          },
+          info,
+        );
       } else {
         result = await db.mutation.createUser({ data: addUserDataPayload }, info);
       }
