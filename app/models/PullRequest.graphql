@@ -1,0 +1,8 @@
+type PullRequest {
+  title: String
+  openedAt: String
+  closed: Boolean
+  merged: Boolean
+  mergedAt: String
+  isFork: Boolean
+}

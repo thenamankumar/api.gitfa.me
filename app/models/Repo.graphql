@@ -2,11 +2,13 @@
 #import Language from './Language.graphql';
 
 type Repo {
-  branch: String
   forks: Int
-  fullName: String
+  name: String!
   isFork: Boolean
   languages: [Language]
+  owner: String!
+  pullRequestsClosed: Int
+  pullRequestsMerged: Int
   size: Int
   stars: Int
   url: String

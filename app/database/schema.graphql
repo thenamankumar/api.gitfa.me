@@ -5,6 +5,7 @@ type User {
   name: String
   pic: String
   profileCreatedAt: String
+  pullRequests: [PullRequest!]! @relation(name: "UserPRs", onDelete: CASCADE)
   repos: [Repo!]! @relation(name: "UserRepos", onDelete: CASCADE)
   time: String!
   uid: String! @unique
@@ -12,13 +13,25 @@ type User {
   username: String! @unique
 }
 
+type PullRequest {
+  user: User! @relation(name: "UserPRs", onDelete: SET_NULL)
+  title: String
+  openedAt: String
+  closed: Boolean
+  merged: Boolean
+  mergedAt: String
+  isFork: Boolean
+}
+
 type Repo {
   user: User! @relation(name: "UserRepos", onDelete: SET_NULL)
-  branch: String
   forks: Int
-  fullName: String
+  name: String!
   isFork: Boolean
   languages: [Language!]!
+  pullRequestsClosed: Int
+  pullRequestsMerged: Int
+  owner: String!
   size: Int
   stars: Int
   url: String
