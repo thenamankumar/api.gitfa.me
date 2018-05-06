@@ -35,7 +35,7 @@ const fetchPullRequests = async (username, acm = [], endCursor = null) => {
     ...acm,
     ...pullRequests.map(({ repository, ...rest }) => ({
       ...rest,
-      isFork: repository.owner.login === username,
+      isFork: repository.owner.login !== username,
     })),
   ];
 
