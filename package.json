@@ -22,6 +22,7 @@
     "cors": "^2.8.4",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
+    "graphql": "^0.13.2",
     "graphql-yoga": "^1.13.1",
     "node-fetch": "^2.1.2",
     "prisma-binding": "^1.5.17",

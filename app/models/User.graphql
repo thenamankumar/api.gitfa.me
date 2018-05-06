@@ -9,6 +9,7 @@ type User {
   profileCreatedAt: String
   repos: [Repo]
   status: Int
+  time: String!
   uid: String
   url: String
   username: String!
