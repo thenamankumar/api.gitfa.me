@@ -42,6 +42,10 @@ const fetchData = async username => {
       issues: profile.issues.totalCount || 0,
       name: profile.name,
       pic: profile.avatarUrl,
+      pinnedRepositories: (profile.pinnedRepositories.nodes || []).map(({ name, owner }) => ({
+        name,
+        owner: owner.login || '',
+      })),
       profileCreatedAt: profile.createdAt,
       uid: profile.id,
       url: profile.url,

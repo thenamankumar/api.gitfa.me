@@ -30,6 +30,14 @@ const userPayload = username => ({
         issues( first:0 ){
           totalCount
         }
+        pinnedRepositories(first: 6) {
+          nodes {
+             name
+             owner {
+              login
+             }
+          }
+        }
       }
     `,
   variables: `
@@ -155,25 +163,10 @@ const reposBasicPayload = (username, endCursor) => ({
             nodes {
               isFork
               name
-              url
-              owner {
-                login
-              }
-              stargazers {
-                totalCount
-              }
-              watchers {
-                totalCount
-              }
-              forks {
-                totalCount
-              }
-              languages(first: 10, orderBy: {field: SIZE,direction: DESC}){
-                nodes{
-                  name
-                  color
+              parent {
+                owner {
+                  login
                 }
-                totalSize
               }
             }          
           }
@@ -199,6 +192,23 @@ const repoPayload = (owner, name, id) => ({
       query($owner: String!, $name: String! $id: ID!)
       {
         repository(owner: $owner, name: $name) {
+          url
+          stargazers {
+            totalCount
+          }
+          watchers {
+            totalCount
+          }
+          forks {
+            totalCount 
+          }
+          languages(first: 10, orderBy: {field: SIZE,direction: DESC}){
+            nodes{
+              name
+              color
+            }
+            totalSize
+          }
           contributions: defaultBranchRef {
             target {
               ... on Commit {

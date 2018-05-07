@@ -8,6 +8,7 @@ type User {
   issues: Int
   name: String
   pic: String
+  pinnedRepositories: [PinnedRepo]
   profileCreatedAt: String
   pullRequests: [PullRequest]
   repos: [Repo]
@@ -16,4 +17,9 @@ type User {
   uid: String
   url: String
   username: String!
+}
+
+type PinnedRepo {
+  name: String!
+  owner: String!
 }

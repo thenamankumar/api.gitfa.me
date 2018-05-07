@@ -29,10 +29,13 @@ export default async (parent, { username, fresh }, { db }, info) => {
 
     if (status === 200) {
       // fresh data fetch successful
-      const { pullRequests, repos, ...profileData } = data;
+      const { pinnedRepositories, pullRequests, repos, ...profileData } = data;
 
       const addUserDataPayload = {
         ...profileData,
+        pinnedRepositories: {
+          create: pinnedRepositories,
+        },
         pullRequests: {
           create: pullRequests,
         },

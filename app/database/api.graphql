@@ -1,7 +1,11 @@
 # source: http://localhost:4466/gitfame/dev
-# timestamp: Mon May 07 2018 12:27:26 GMT+0530 (IST)
+# timestamp: Mon May 07 2018 13:37:04 GMT+0530 (IST)
 
 type AggregateLanguage {
+  count: Int!
+}
+
+type AggregatePinnedRepo {
   count: Int!
 }
 
@@ -303,6 +307,7 @@ scalar Long
 
 type Mutation {
   createUser(data: UserCreateInput!): User!
+  createPinnedRepo(data: PinnedRepoCreateInput!): PinnedRepo!
   createPullRequest(data: PullRequestCreateInput!): PullRequest!
   createRepo(data: RepoCreateInput!): Repo!
   createLanguage(data: LanguageCreateInput!): Language!
@@ -310,10 +315,12 @@ type Mutation {
   deleteUser(where: UserWhereUniqueInput!): User
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyPinnedRepoes(data: PinnedRepoUpdateInput!, where: PinnedRepoWhereInput): BatchPayload!
   updateManyPullRequests(data: PullRequestUpdateInput!, where: PullRequestWhereInput): BatchPayload!
   updateManyRepoes(data: RepoUpdateInput!, where: RepoWhereInput): BatchPayload!
   updateManyLanguages(data: LanguageUpdateInput!, where: LanguageWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyPinnedRepoes(where: PinnedRepoWhereInput): BatchPayload!
   deleteManyPullRequests(where: PullRequestWhereInput): BatchPayload!
   deleteManyRepoes(where: RepoWhereInput): BatchPayload!
   deleteManyLanguages(where: LanguageWhereInput): BatchPayload!
@@ -358,6 +365,281 @@ type PageInfo {
   When paginating forwards, the cursor to continue.
   """
   endCursor: String
+}
+
+type PinnedRepo {
+  user(where: UserWhereInput): User!
+  name: String!
+  owner: String!
+}
+
+"""
+A connection to a list of items.
+"""
+type PinnedRepoConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [PinnedRepoEdge]!
+  aggregate: AggregatePinnedRepo!
+}
+
+input PinnedRepoCreateInput {
+  name: String!
+  owner: String!
+  user: UserCreateOneWithoutPinnedRepositoriesInput!
+}
+
+input PinnedRepoCreateManyWithoutUserInput {
+  create: [PinnedRepoCreateWithoutUserInput!]
+}
+
+input PinnedRepoCreateWithoutUserInput {
+  name: String!
+  owner: String!
+}
+
+"""
+An edge in a connection.
+"""
+type PinnedRepoEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: PinnedRepo!
+
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum PinnedRepoOrderByInput {
+  name_ASC
+  name_DESC
+  owner_ASC
+  owner_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type PinnedRepoPreviousValues {
+  name: String!
+  owner: String!
+}
+
+type PinnedRepoSubscriptionPayload {
+  mutation: MutationType!
+  node: PinnedRepo
+  updatedFields: [String!]
+  previousValues: PinnedRepoPreviousValues
+}
+
+input PinnedRepoSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [PinnedRepoSubscriptionWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [PinnedRepoSubscriptionWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [PinnedRepoSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: PinnedRepoWhereInput
+}
+
+input PinnedRepoUpdateInput {
+  name: String
+  owner: String
+  user: UserUpdateOneWithoutPinnedRepositoriesInput
+}
+
+input PinnedRepoUpdateManyWithoutUserInput {
+  create: [PinnedRepoCreateWithoutUserInput!]
+}
+
+input PinnedRepoWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [PinnedRepoWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [PinnedRepoWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [PinnedRepoWhereInput!]
+  name: String
+
+  """
+  All values that are not equal to given value.
+  """
+  name_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  name_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  name_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  name_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  name_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  name_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  name_gte: String
+
+  """
+  All values containing the given string.
+  """
+  name_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  name_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  name_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  name_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  name_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  name_not_ends_with: String
+  owner: String
+
+  """
+  All values that are not equal to given value.
+  """
+  owner_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  owner_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  owner_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  owner_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  owner_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  owner_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  owner_gte: String
+
+  """
+  All values containing the given string.
+  """
+  owner_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  owner_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  owner_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  owner_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  owner_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  owner_not_ends_with: String
+  user: UserWhereInput
 }
 
 type PullRequest {
@@ -807,6 +1089,15 @@ type Query {
     first: Int
     last: Int
   ): [User]!
+  pinnedRepoes(
+    where: PinnedRepoWhereInput
+    orderBy: PinnedRepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [PinnedRepo]!
   pullRequests(
     where: PullRequestWhereInput
     orderBy: PullRequestOrderByInput
@@ -844,6 +1135,15 @@ type Query {
     first: Int
     last: Int
   ): UserConnection!
+  pinnedRepoesConnection(
+    where: PinnedRepoWhereInput
+    orderBy: PinnedRepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PinnedRepoConnection!
   pullRequestsConnection(
     where: PullRequestWhereInput
     orderBy: PullRequestOrderByInput
@@ -1476,6 +1776,7 @@ input RepoWhereInput {
 
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  pinnedRepo(where: PinnedRepoSubscriptionWhereInput): PinnedRepoSubscriptionPayload
   pullRequest(where: PullRequestSubscriptionWhereInput): PullRequestSubscriptionPayload
   repo(where: RepoSubscriptionWhereInput): RepoSubscriptionPayload
   language(where: LanguageSubscriptionWhereInput): LanguageSubscriptionPayload
@@ -1488,6 +1789,15 @@ type User {
   issues: Int
   name: String
   pic: String
+  pinnedRepositories(
+    where: PinnedRepoWhereInput
+    orderBy: PinnedRepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [PinnedRepo!]
   profileCreatedAt: String
   pullRequests(
     where: PullRequestWhereInput
@@ -1541,8 +1851,14 @@ input UserCreateInput {
   uid: String!
   url: String
   username: String!
+  pinnedRepositories: PinnedRepoCreateManyWithoutUserInput
   pullRequests: PullRequestCreateManyWithoutUserInput
   repos: RepoCreateManyWithoutUserInput
+}
+
+input UserCreateOneWithoutPinnedRepositoriesInput {
+  create: UserCreateWithoutPinnedRepositoriesInput
+  connect: UserWhereUniqueInput
 }
 
 input UserCreateOneWithoutPullRequestsInput {
@@ -1553,6 +1869,22 @@ input UserCreateOneWithoutPullRequestsInput {
 input UserCreateOneWithoutReposInput {
   create: UserCreateWithoutReposInput
   connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutPinnedRepositoriesInput {
+  bio: String
+  followers: Int
+  following: Int
+  issues: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  time: String!
+  uid: String!
+  url: String
+  username: String!
+  pullRequests: PullRequestCreateManyWithoutUserInput
+  repos: RepoCreateManyWithoutUserInput
 }
 
 input UserCreateWithoutPullRequestsInput {
@@ -1567,6 +1899,7 @@ input UserCreateWithoutPullRequestsInput {
   uid: String!
   url: String
   username: String!
+  pinnedRepositories: PinnedRepoCreateManyWithoutUserInput
   repos: RepoCreateManyWithoutUserInput
 }
 
@@ -1582,6 +1915,7 @@ input UserCreateWithoutReposInput {
   uid: String!
   url: String
   username: String!
+  pinnedRepositories: PinnedRepoCreateManyWithoutUserInput
   pullRequests: PullRequestCreateManyWithoutUserInput
 }
 
@@ -1702,8 +2036,17 @@ input UserUpdateInput {
   uid: String
   url: String
   username: String
+  pinnedRepositories: PinnedRepoUpdateManyWithoutUserInput
   pullRequests: PullRequestUpdateManyWithoutUserInput
   repos: RepoUpdateManyWithoutUserInput
+}
+
+input UserUpdateOneWithoutPinnedRepositoriesInput {
+  create: UserCreateWithoutPinnedRepositoriesInput
+  connect: UserWhereUniqueInput
+  delete: Boolean
+  update: UserUpdateWithoutPinnedRepositoriesDataInput
+  upsert: UserUpsertWithoutPinnedRepositoriesInput
 }
 
 input UserUpdateOneWithoutPullRequestsInput {
@@ -1722,6 +2065,22 @@ input UserUpdateOneWithoutReposInput {
   upsert: UserUpsertWithoutReposInput
 }
 
+input UserUpdateWithoutPinnedRepositoriesDataInput {
+  bio: String
+  followers: Int
+  following: Int
+  issues: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  time: String
+  uid: String
+  url: String
+  username: String
+  pullRequests: PullRequestUpdateManyWithoutUserInput
+  repos: RepoUpdateManyWithoutUserInput
+}
+
 input UserUpdateWithoutPullRequestsDataInput {
   bio: String
   followers: Int
@@ -1734,6 +2093,7 @@ input UserUpdateWithoutPullRequestsDataInput {
   uid: String
   url: String
   username: String
+  pinnedRepositories: PinnedRepoUpdateManyWithoutUserInput
   repos: RepoUpdateManyWithoutUserInput
 }
 
@@ -1749,7 +2109,13 @@ input UserUpdateWithoutReposDataInput {
   uid: String
   url: String
   username: String
+  pinnedRepositories: PinnedRepoUpdateManyWithoutUserInput
   pullRequests: PullRequestUpdateManyWithoutUserInput
+}
+
+input UserUpsertWithoutPinnedRepositoriesInput {
+  update: UserUpdateWithoutPinnedRepositoriesDataInput!
+  create: UserCreateWithoutPinnedRepositoriesInput!
 }
 
 input UserUpsertWithoutPullRequestsInput {
@@ -2413,6 +2779,9 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   username_not_ends_with: String
+  pinnedRepositories_every: PinnedRepoWhereInput
+  pinnedRepositories_some: PinnedRepoWhereInput
+  pinnedRepositories_none: PinnedRepoWhereInput
   pullRequests_every: PullRequestWhereInput
   pullRequests_some: PullRequestWhereInput
   pullRequests_none: PullRequestWhereInput

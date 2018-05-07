@@ -35,15 +35,9 @@ const fetchReposList = async (username, acm = [], endCursor = null) => {
   const updatedAcm = [
     ...acm,
     ...repos.map(repo => ({
-      forks: repo.forks.totalCount,
       isFork: repo.isFork,
-      languages: repo.languages.nodes || [],
       name: repo.name,
-      owner: repo.owner.login,
-      size: repo.languages.totalSize,
-      stars: repo.stargazers.totalCount,
-      url: repo.url,
-      watchers: repo.watchers.totalCount,
+      owner: repo.parent ? repo.parent.owner.login : username,
     })),
   ];
 

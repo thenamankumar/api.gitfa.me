@@ -5,6 +5,7 @@ type User {
   issues: Int
   name: String
   pic: String
+  pinnedRepositories: [PinnedRepo!]! @relation(name: "UserPinnedRepo", onDelete: CASCADE)
   profileCreatedAt: String
   pullRequests: [PullRequest!]! @relation(name: "UserPRs", onDelete: CASCADE)
   repos: [Repo!]! @relation(name: "UserRepos", onDelete: CASCADE)
@@ -12,6 +13,12 @@ type User {
   uid: String! @unique
   url: String
   username: String! @unique
+}
+
+type PinnedRepo {
+  user: User! @relation(name: "UserPinnedRepo", onDelete: SET_NULL)
+  name: String!
+  owner: String!
 }
 
 type PullRequest {
