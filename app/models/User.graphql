@@ -5,6 +5,7 @@ type User {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String

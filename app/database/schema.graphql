@@ -2,6 +2,7 @@ type User {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -21,6 +22,8 @@ type PullRequest {
   merged: Boolean
   mergedAt: String
   isFork: Boolean
+  commits: Int
+  repository: Json
 }
 
 type Repo {
@@ -29,8 +32,6 @@ type Repo {
   name: String!
   isFork: Boolean
   languages: [Language!]!
-  pullRequestsClosed: Int
-  pullRequestsMerged: Int
   owner: String!
   size: Int
   stars: Int

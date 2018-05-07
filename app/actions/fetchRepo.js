@@ -33,8 +33,6 @@ const fetchRepo = async (owner, name, username, uid) => {
   // return repo data
   return {
     userCommits: repo.contributions ? repo.contributions.target.userCommits.totalCount : 0,
-    pullRequestsClosed: repo.pullRequestsClosed.totalCount || 0,
-    pullRequestsMerged: repo.pullRequestsMerged.totalCount || 0,
   };
 };
 

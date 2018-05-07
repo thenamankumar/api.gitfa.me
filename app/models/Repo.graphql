@@ -7,8 +7,6 @@ type Repo {
   isFork: Boolean
   languages: [Language]
   owner: String!
-  pullRequestsClosed: Int
-  pullRequestsMerged: Int
   size: Int
   stars: Int
   url: String

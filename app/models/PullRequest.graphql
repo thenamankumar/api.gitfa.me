@@ -2,7 +2,15 @@ type PullRequest {
   title: String
   openedAt: String
   closed: Boolean
+  commits: Int
   merged: Boolean
   mergedAt: String
   isFork: Boolean
+  repository: PRRepo
+}
+
+type PRRepo {
+  uid: ID!
+  name: String!
+  owner: String!
 }

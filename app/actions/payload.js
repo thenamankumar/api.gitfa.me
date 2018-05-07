@@ -27,6 +27,9 @@ const userPayload = username => ({
         following {
           totalCount
         }
+        issues( first:0 ){
+          totalCount
+        }
       }
     `,
   variables: `
@@ -205,12 +208,6 @@ const repoPayload = (owner, name, id) => ({
               }
             }
           }
-          pullRequestsClosed: pullRequests(first: 0, states: CLOSED){
-            totalCount
-          }
-          pullRequestsMerged: pullRequests(first: 0, states: MERGED){
-            totalCount
-          }
         }
         
         rateLimit {
@@ -238,6 +235,9 @@ const pullRequestsPayload = (username, endCursor) => ({
               title
               openedAt: createdAt
 				      closed
+				      commits{
+                totalCount
+              }
               merged
               mergedAt
               repository {

@@ -28,14 +28,20 @@ const fetchPullRequests = async (username, acm = [], endCursor = null) => {
   const cursor = prData.data.user.pullRequests.pageInfo.endCursor;
   // current set of pull requests
   const pullRequests = prData.data.user.pullRequests.nodes || [];
-  console.log(`Successfully cursor ${cursor} fetched in ${new Date() - startTime}ms`);
+  console.log(`Successfully ${pullRequests.length} pull requests ${cursor} fetched in ${new Date() - startTime}ms`);
 
   // compile pull requests data and push current set of pull requests to accumulator
   const updatedAcm = [
     ...acm,
-    ...pullRequests.map(({ repository, ...rest }) => ({
+    ...pullRequests.map(({ commits, repository: { id, name, owner }, ...rest }) => ({
       ...rest,
-      isFork: repository.owner.login !== username,
+      commits: commits.totalCount || 0,
+      repository: {
+        uid: id,
+        name,
+        owner: owner.login || '',
+      },
+      isFork: (owner.login || '').toLowerCase() !== username,
     })),
   ];
 

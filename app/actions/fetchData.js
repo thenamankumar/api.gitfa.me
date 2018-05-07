@@ -36,9 +36,10 @@ const fetchData = async username => {
 
     // compile profile data
     data = {
-      bio: profile.bio,
-      followers: profile.followers.totalCount,
-      following: profile.following.totalCount,
+      bio: profile.bio || '',
+      followers: profile.followers.totalCount || 0,
+      following: profile.following.totalCount || 0,
+      issues: profile.issues.totalCount || 0,
       name: profile.name,
       pic: profile.avatarUrl,
       profileCreatedAt: profile.createdAt,

@@ -1,5 +1,5 @@
 # source: http://localhost:4466/gitfame/dev
-# timestamp: Sun May 06 2018 17:18:22 GMT+0530 (IST)
+# timestamp: Mon May 07 2018 12:27:26 GMT+0530 (IST)
 
 type AggregateLanguage {
   count: Int!
@@ -23,6 +23,11 @@ type BatchPayload {
   """
   count: Long!
 }
+
+"""
+Raw JSON value
+"""
+scalar Json
 
 type Language {
   name: String!
@@ -363,6 +368,8 @@ type PullRequest {
   merged: Boolean
   mergedAt: String
   isFork: Boolean
+  commits: Int
+  repository: Json
 }
 
 """
@@ -388,6 +395,8 @@ input PullRequestCreateInput {
   merged: Boolean
   mergedAt: String
   isFork: Boolean
+  commits: Int
+  repository: Json
   user: UserCreateOneWithoutPullRequestsInput!
 }
 
@@ -402,6 +411,8 @@ input PullRequestCreateWithoutUserInput {
   merged: Boolean
   mergedAt: String
   isFork: Boolean
+  commits: Int
+  repository: Json
 }
 
 """
@@ -432,6 +443,10 @@ enum PullRequestOrderByInput {
   mergedAt_DESC
   isFork_ASC
   isFork_DESC
+  commits_ASC
+  commits_DESC
+  repository_ASC
+  repository_DESC
   id_ASC
   id_DESC
   updatedAt_ASC
@@ -447,6 +462,8 @@ type PullRequestPreviousValues {
   merged: Boolean
   mergedAt: String
   isFork: Boolean
+  commits: Int
+  repository: Json
 }
 
 type PullRequestSubscriptionPayload {
@@ -501,6 +518,8 @@ input PullRequestUpdateInput {
   merged: Boolean
   mergedAt: String
   isFork: Boolean
+  commits: Int
+  repository: Json
   user: UserUpdateOneWithoutPullRequestsInput
 }
 
@@ -739,6 +758,42 @@ input PullRequestWhereInput {
   All values that are not equal to given value.
   """
   isFork_not: Boolean
+  commits: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  commits_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  commits_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  commits_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  commits_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  commits_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  commits_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  commits_gte: Int
   user: UserWhereInput
 }
 
@@ -842,8 +897,6 @@ type Repo {
     first: Int
     last: Int
   ): [Language!]
-  pullRequestsClosed: Int
-  pullRequestsMerged: Int
   owner: String!
   size: Int
   stars: Int
@@ -872,8 +925,6 @@ input RepoCreateInput {
   forks: Int
   name: String!
   isFork: Boolean
-  pullRequestsClosed: Int
-  pullRequestsMerged: Int
   owner: String!
   size: Int
   stars: Int
@@ -892,8 +943,6 @@ input RepoCreateWithoutUserInput {
   forks: Int
   name: String!
   isFork: Boolean
-  pullRequestsClosed: Int
-  pullRequestsMerged: Int
   owner: String!
   size: Int
   stars: Int
@@ -925,10 +974,6 @@ enum RepoOrderByInput {
   name_DESC
   isFork_ASC
   isFork_DESC
-  pullRequestsClosed_ASC
-  pullRequestsClosed_DESC
-  pullRequestsMerged_ASC
-  pullRequestsMerged_DESC
   owner_ASC
   owner_DESC
   size_ASC
@@ -953,8 +998,6 @@ type RepoPreviousValues {
   forks: Int
   name: String!
   isFork: Boolean
-  pullRequestsClosed: Int
-  pullRequestsMerged: Int
   owner: String!
   size: Int
   stars: Int
@@ -1012,8 +1055,6 @@ input RepoUpdateInput {
   forks: Int
   name: String
   isFork: Boolean
-  pullRequestsClosed: Int
-  pullRequestsMerged: Int
   owner: String
   size: Int
   stars: Int
@@ -1151,78 +1192,6 @@ input RepoWhereInput {
   All values that are not equal to given value.
   """
   isFork_not: Boolean
-  pullRequestsClosed: Int
-
-  """
-  All values that are not equal to given value.
-  """
-  pullRequestsClosed_not: Int
-
-  """
-  All values that are contained in given list.
-  """
-  pullRequestsClosed_in: [Int!]
-
-  """
-  All values that are not contained in given list.
-  """
-  pullRequestsClosed_not_in: [Int!]
-
-  """
-  All values less than the given value.
-  """
-  pullRequestsClosed_lt: Int
-
-  """
-  All values less than or equal the given value.
-  """
-  pullRequestsClosed_lte: Int
-
-  """
-  All values greater than the given value.
-  """
-  pullRequestsClosed_gt: Int
-
-  """
-  All values greater than or equal the given value.
-  """
-  pullRequestsClosed_gte: Int
-  pullRequestsMerged: Int
-
-  """
-  All values that are not equal to given value.
-  """
-  pullRequestsMerged_not: Int
-
-  """
-  All values that are contained in given list.
-  """
-  pullRequestsMerged_in: [Int!]
-
-  """
-  All values that are not contained in given list.
-  """
-  pullRequestsMerged_not_in: [Int!]
-
-  """
-  All values less than the given value.
-  """
-  pullRequestsMerged_lt: Int
-
-  """
-  All values less than or equal the given value.
-  """
-  pullRequestsMerged_lte: Int
-
-  """
-  All values greater than the given value.
-  """
-  pullRequestsMerged_gt: Int
-
-  """
-  All values greater than or equal the given value.
-  """
-  pullRequestsMerged_gte: Int
   owner: String
 
   """
@@ -1516,6 +1485,7 @@ type User {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1563,6 +1533,7 @@ input UserCreateInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1588,6 +1559,7 @@ input UserCreateWithoutPullRequestsInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1602,6 +1574,7 @@ input UserCreateWithoutReposInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1634,6 +1607,8 @@ enum UserOrderByInput {
   followers_DESC
   following_ASC
   following_DESC
+  issues_ASC
+  issues_DESC
   name_ASC
   name_DESC
   pic_ASC
@@ -1660,6 +1635,7 @@ type UserPreviousValues {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1718,6 +1694,7 @@ input UserUpdateInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1749,6 +1726,7 @@ input UserUpdateWithoutPullRequestsDataInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1763,6 +1741,7 @@ input UserUpdateWithoutReposDataInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1936,6 +1915,42 @@ input UserWhereInput {
   All values greater than or equal the given value.
   """
   following_gte: Int
+  issues: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  issues_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  issues_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  issues_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  issues_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  issues_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  issues_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  issues_gte: Int
   name: String
 
   """
