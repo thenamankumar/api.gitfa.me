@@ -1,7 +1,8 @@
 import fetch from 'node-fetch';
 import { userPayload } from './payload';
-import fetchAllCursors from './fetchAllCursors';
-import fetchRepos from './fetchRepos';
+import fetchReposList from './fetchReposList';
+import fetchRepo from './fetchRepo';
+import fetchPullRequests from './fetchPullRequests';
 
 const fetchData = async username => {
   console.log(`Fetching data from github: ${username}`);
@@ -35,11 +36,16 @@ const fetchData = async username => {
 
     // compile profile data
     data = {
-      bio: profile.bio,
-      followers: profile.followers.totalCount,
-      following: profile.following.totalCount,
+      bio: profile.bio || '',
+      followers: profile.followers.totalCount || 0,
+      following: profile.following.totalCount || 0,
+      issues: profile.issues.totalCount || 0,
       name: profile.name,
       pic: profile.avatarUrl,
+      pinnedRepositories: (profile.pinnedRepositories.nodes || []).map(({ name, owner }) => ({
+        name,
+        owner: owner.login || '',
+      })),
       profileCreatedAt: profile.createdAt,
       uid: profile.id,
       url: profile.url,
@@ -47,27 +53,38 @@ const fetchData = async username => {
     };
 
     /*
-      Accumulate all cursors in series and return array of cursors.
-      Fetch cursor for 20 repos at a time.
+      Accumulate list of all pull requests
     */
-    const startCursorsTime = new Date();
-    const cursors = await fetchAllCursors(username);
-    console.log(`Fetched ${cursors.length} cursors for user: ${username} in ${new Date() - startCursorsTime}ms`);
+    const startPRTime = new Date();
+    const pullRequests = await fetchPullRequests(username);
+    console.log(`Fetched ${pullRequests.length} pull requests for user: ${username} in ${new Date() - startPRTime}ms`);
+    data.pullRequests = pullRequests;
 
     /*
-      For each cursor fetch repo collections in parallel
-      20 repos per request
+      Accumulate list of all repos with basic details including
+      in series and return array of repos (acm).
+      Fetch basic details for 100 repos at a time.
     */
-    const startReposTime = new Date();
-    const reposCollections = await Promise.all(
-      cursors.reduce((acm, cursor) => [...acm, fetchRepos(username, data.uid, cursor)], [
-        fetchRepos(username, data.uid),
-      ]),
+    const startReposListTime = new Date();
+    const reposList = await fetchReposList(username);
+    console.log(`Fetched ${reposList.length} repos list for user: ${username} in ${new Date() - startReposListTime}ms`);
+
+    /*
+      For each repo in the repo list fetch
+      detailed stats data in parallel.
+    */
+    const startReposDataTime = new Date();
+    // detailed repo stats
+    const reposDetailedDataCollection = await Promise.all(
+      reposList.map(({ owner, name }) => fetchRepo(owner, name, username, data.uid)),
     );
 
-    // accumulate repos and add to data
-    data.repos = reposCollections.reduce((acm, reposCollection) => [...acm, ...reposCollection], []);
-    console.log(`Fetched ${data.repos.length} repos for user: ${username} in ${new Date() - startReposTime}ms`);
+    // accumulate repos data and add to user data
+    data.repos = reposList.map((repoBasicData, index) => ({ ...repoBasicData, ...reposDetailedDataCollection[index] }));
+
+    console.log(
+      `Fetched ${data.repos.length} repos detailed data for user: ${username} in ${new Date() - startReposDataTime}ms`,
+    );
 
     // set current time
     data.time = new Date();

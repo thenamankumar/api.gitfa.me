@@ -1,7 +1,15 @@
 # source: http://localhost:4466/gitfame/dev
-# timestamp: Fri May 04 2018 11:03:51 GMT+0530 (IST)
+# timestamp: Mon May 07 2018 13:37:04 GMT+0530 (IST)
 
 type AggregateLanguage {
+  count: Int!
+}
+
+type AggregatePinnedRepo {
+  count: Int!
+}
+
+type AggregatePullRequest {
   count: Int!
 }
 
@@ -19,6 +27,11 @@ type BatchPayload {
   """
   count: Long!
 }
+
+"""
+Raw JSON value
+"""
+scalar Json
 
 type Language {
   name: String!
@@ -294,15 +307,21 @@ scalar Long
 
 type Mutation {
   createUser(data: UserCreateInput!): User!
+  createPinnedRepo(data: PinnedRepoCreateInput!): PinnedRepo!
+  createPullRequest(data: PullRequestCreateInput!): PullRequest!
   createRepo(data: RepoCreateInput!): Repo!
   createLanguage(data: LanguageCreateInput!): Language!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   deleteUser(where: UserWhereUniqueInput!): User
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyPinnedRepoes(data: PinnedRepoUpdateInput!, where: PinnedRepoWhereInput): BatchPayload!
+  updateManyPullRequests(data: PullRequestUpdateInput!, where: PullRequestWhereInput): BatchPayload!
   updateManyRepoes(data: RepoUpdateInput!, where: RepoWhereInput): BatchPayload!
   updateManyLanguages(data: LanguageUpdateInput!, where: LanguageWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyPinnedRepoes(where: PinnedRepoWhereInput): BatchPayload!
+  deleteManyPullRequests(where: PullRequestWhereInput): BatchPayload!
   deleteManyRepoes(where: RepoWhereInput): BatchPayload!
   deleteManyLanguages(where: LanguageWhereInput): BatchPayload!
 }
@@ -348,6 +367,718 @@ type PageInfo {
   endCursor: String
 }
 
+type PinnedRepo {
+  user(where: UserWhereInput): User!
+  name: String!
+  owner: String!
+}
+
+"""
+A connection to a list of items.
+"""
+type PinnedRepoConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [PinnedRepoEdge]!
+  aggregate: AggregatePinnedRepo!
+}
+
+input PinnedRepoCreateInput {
+  name: String!
+  owner: String!
+  user: UserCreateOneWithoutPinnedRepositoriesInput!
+}
+
+input PinnedRepoCreateManyWithoutUserInput {
+  create: [PinnedRepoCreateWithoutUserInput!]
+}
+
+input PinnedRepoCreateWithoutUserInput {
+  name: String!
+  owner: String!
+}
+
+"""
+An edge in a connection.
+"""
+type PinnedRepoEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: PinnedRepo!
+
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum PinnedRepoOrderByInput {
+  name_ASC
+  name_DESC
+  owner_ASC
+  owner_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type PinnedRepoPreviousValues {
+  name: String!
+  owner: String!
+}
+
+type PinnedRepoSubscriptionPayload {
+  mutation: MutationType!
+  node: PinnedRepo
+  updatedFields: [String!]
+  previousValues: PinnedRepoPreviousValues
+}
+
+input PinnedRepoSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [PinnedRepoSubscriptionWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [PinnedRepoSubscriptionWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [PinnedRepoSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: PinnedRepoWhereInput
+}
+
+input PinnedRepoUpdateInput {
+  name: String
+  owner: String
+  user: UserUpdateOneWithoutPinnedRepositoriesInput
+}
+
+input PinnedRepoUpdateManyWithoutUserInput {
+  create: [PinnedRepoCreateWithoutUserInput!]
+}
+
+input PinnedRepoWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [PinnedRepoWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [PinnedRepoWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [PinnedRepoWhereInput!]
+  name: String
+
+  """
+  All values that are not equal to given value.
+  """
+  name_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  name_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  name_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  name_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  name_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  name_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  name_gte: String
+
+  """
+  All values containing the given string.
+  """
+  name_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  name_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  name_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  name_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  name_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  name_not_ends_with: String
+  owner: String
+
+  """
+  All values that are not equal to given value.
+  """
+  owner_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  owner_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  owner_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  owner_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  owner_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  owner_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  owner_gte: String
+
+  """
+  All values containing the given string.
+  """
+  owner_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  owner_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  owner_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  owner_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  owner_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  owner_not_ends_with: String
+  user: UserWhereInput
+}
+
+type PullRequest {
+  user(where: UserWhereInput): User!
+  title: String
+  openedAt: String
+  closed: Boolean
+  merged: Boolean
+  mergedAt: String
+  isFork: Boolean
+  commits: Int
+  repository: Json
+}
+
+"""
+A connection to a list of items.
+"""
+type PullRequestConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [PullRequestEdge]!
+  aggregate: AggregatePullRequest!
+}
+
+input PullRequestCreateInput {
+  title: String
+  openedAt: String
+  closed: Boolean
+  merged: Boolean
+  mergedAt: String
+  isFork: Boolean
+  commits: Int
+  repository: Json
+  user: UserCreateOneWithoutPullRequestsInput!
+}
+
+input PullRequestCreateManyWithoutUserInput {
+  create: [PullRequestCreateWithoutUserInput!]
+}
+
+input PullRequestCreateWithoutUserInput {
+  title: String
+  openedAt: String
+  closed: Boolean
+  merged: Boolean
+  mergedAt: String
+  isFork: Boolean
+  commits: Int
+  repository: Json
+}
+
+"""
+An edge in a connection.
+"""
+type PullRequestEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: PullRequest!
+
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum PullRequestOrderByInput {
+  title_ASC
+  title_DESC
+  openedAt_ASC
+  openedAt_DESC
+  closed_ASC
+  closed_DESC
+  merged_ASC
+  merged_DESC
+  mergedAt_ASC
+  mergedAt_DESC
+  isFork_ASC
+  isFork_DESC
+  commits_ASC
+  commits_DESC
+  repository_ASC
+  repository_DESC
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type PullRequestPreviousValues {
+  title: String
+  openedAt: String
+  closed: Boolean
+  merged: Boolean
+  mergedAt: String
+  isFork: Boolean
+  commits: Int
+  repository: Json
+}
+
+type PullRequestSubscriptionPayload {
+  mutation: MutationType!
+  node: PullRequest
+  updatedFields: [String!]
+  previousValues: PullRequestPreviousValues
+}
+
+input PullRequestSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [PullRequestSubscriptionWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [PullRequestSubscriptionWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [PullRequestSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: PullRequestWhereInput
+}
+
+input PullRequestUpdateInput {
+  title: String
+  openedAt: String
+  closed: Boolean
+  merged: Boolean
+  mergedAt: String
+  isFork: Boolean
+  commits: Int
+  repository: Json
+  user: UserUpdateOneWithoutPullRequestsInput
+}
+
+input PullRequestUpdateManyWithoutUserInput {
+  create: [PullRequestCreateWithoutUserInput!]
+}
+
+input PullRequestWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [PullRequestWhereInput!]
+
+  """
+  Logical OR on all given filters.
+  """
+  OR: [PullRequestWhereInput!]
+
+  """
+  Logical NOT on all given filters combined by AND.
+  """
+  NOT: [PullRequestWhereInput!]
+  title: String
+
+  """
+  All values that are not equal to given value.
+  """
+  title_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  title_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  title_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  title_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  title_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  title_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  title_gte: String
+
+  """
+  All values containing the given string.
+  """
+  title_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  title_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  title_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  title_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  title_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  title_not_ends_with: String
+  openedAt: String
+
+  """
+  All values that are not equal to given value.
+  """
+  openedAt_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  openedAt_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  openedAt_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  openedAt_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  openedAt_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  openedAt_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  openedAt_gte: String
+
+  """
+  All values containing the given string.
+  """
+  openedAt_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  openedAt_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  openedAt_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  openedAt_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  openedAt_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  openedAt_not_ends_with: String
+  closed: Boolean
+
+  """
+  All values that are not equal to given value.
+  """
+  closed_not: Boolean
+  merged: Boolean
+
+  """
+  All values that are not equal to given value.
+  """
+  merged_not: Boolean
+  mergedAt: String
+
+  """
+  All values that are not equal to given value.
+  """
+  mergedAt_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  mergedAt_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  mergedAt_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  mergedAt_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  mergedAt_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  mergedAt_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  mergedAt_gte: String
+
+  """
+  All values containing the given string.
+  """
+  mergedAt_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  mergedAt_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  mergedAt_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  mergedAt_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  mergedAt_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  mergedAt_not_ends_with: String
+  isFork: Boolean
+
+  """
+  All values that are not equal to given value.
+  """
+  isFork_not: Boolean
+  commits: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  commits_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  commits_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  commits_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  commits_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  commits_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  commits_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  commits_gte: Int
+  user: UserWhereInput
+}
+
 type Query {
   users(
     where: UserWhereInput
@@ -358,6 +1089,24 @@ type Query {
     first: Int
     last: Int
   ): [User]!
+  pinnedRepoes(
+    where: PinnedRepoWhereInput
+    orderBy: PinnedRepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [PinnedRepo]!
+  pullRequests(
+    where: PullRequestWhereInput
+    orderBy: PullRequestOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [PullRequest]!
   repoes(
     where: RepoWhereInput
     orderBy: RepoOrderByInput
@@ -386,6 +1135,24 @@ type Query {
     first: Int
     last: Int
   ): UserConnection!
+  pinnedRepoesConnection(
+    where: PinnedRepoWhereInput
+    orderBy: PinnedRepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PinnedRepoConnection!
+  pullRequestsConnection(
+    where: PullRequestWhereInput
+    orderBy: PullRequestOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): PullRequestConnection!
   repoesConnection(
     where: RepoWhereInput
     orderBy: RepoOrderByInput
@@ -418,9 +1185,8 @@ type Query {
 
 type Repo {
   user(where: UserWhereInput): User!
-  branch: String
   forks: Int
-  fullName: String
+  name: String!
   isFork: Boolean
   languages(
     where: LanguageWhereInput
@@ -431,6 +1197,7 @@ type Repo {
     first: Int
     last: Int
   ): [Language!]
+  owner: String!
   size: Int
   stars: Int
   url: String
@@ -455,10 +1222,10 @@ type RepoConnection {
 }
 
 input RepoCreateInput {
-  branch: String
   forks: Int
-  fullName: String
+  name: String!
   isFork: Boolean
+  owner: String!
   size: Int
   stars: Int
   url: String
@@ -473,10 +1240,10 @@ input RepoCreateManyWithoutUserInput {
 }
 
 input RepoCreateWithoutUserInput {
-  branch: String
   forks: Int
-  fullName: String
+  name: String!
   isFork: Boolean
+  owner: String!
   size: Int
   stars: Int
   url: String
@@ -501,14 +1268,14 @@ type RepoEdge {
 }
 
 enum RepoOrderByInput {
-  branch_ASC
-  branch_DESC
   forks_ASC
   forks_DESC
-  fullName_ASC
-  fullName_DESC
+  name_ASC
+  name_DESC
   isFork_ASC
   isFork_DESC
+  owner_ASC
+  owner_DESC
   size_ASC
   size_DESC
   stars_ASC
@@ -528,10 +1295,10 @@ enum RepoOrderByInput {
 }
 
 type RepoPreviousValues {
-  branch: String
   forks: Int
-  fullName: String
+  name: String!
   isFork: Boolean
+  owner: String!
   size: Int
   stars: Int
   url: String
@@ -585,10 +1352,10 @@ input RepoSubscriptionWhereInput {
 }
 
 input RepoUpdateInput {
-  branch: String
   forks: Int
-  fullName: String
+  name: String
   isFork: Boolean
+  owner: String
   size: Int
   stars: Int
   url: String
@@ -617,72 +1384,6 @@ input RepoWhereInput {
   Logical NOT on all given filters combined by AND.
   """
   NOT: [RepoWhereInput!]
-  branch: String
-
-  """
-  All values that are not equal to given value.
-  """
-  branch_not: String
-
-  """
-  All values that are contained in given list.
-  """
-  branch_in: [String!]
-
-  """
-  All values that are not contained in given list.
-  """
-  branch_not_in: [String!]
-
-  """
-  All values less than the given value.
-  """
-  branch_lt: String
-
-  """
-  All values less than or equal the given value.
-  """
-  branch_lte: String
-
-  """
-  All values greater than the given value.
-  """
-  branch_gt: String
-
-  """
-  All values greater than or equal the given value.
-  """
-  branch_gte: String
-
-  """
-  All values containing the given string.
-  """
-  branch_contains: String
-
-  """
-  All values not containing the given string.
-  """
-  branch_not_contains: String
-
-  """
-  All values starting with the given string.
-  """
-  branch_starts_with: String
-
-  """
-  All values not starting with the given string.
-  """
-  branch_not_starts_with: String
-
-  """
-  All values ending with the given string.
-  """
-  branch_ends_with: String
-
-  """
-  All values not ending with the given string.
-  """
-  branch_not_ends_with: String
   forks: Int
 
   """
@@ -719,78 +1420,144 @@ input RepoWhereInput {
   All values greater than or equal the given value.
   """
   forks_gte: Int
-  fullName: String
+  name: String
 
   """
   All values that are not equal to given value.
   """
-  fullName_not: String
+  name_not: String
 
   """
   All values that are contained in given list.
   """
-  fullName_in: [String!]
+  name_in: [String!]
 
   """
   All values that are not contained in given list.
   """
-  fullName_not_in: [String!]
+  name_not_in: [String!]
 
   """
   All values less than the given value.
   """
-  fullName_lt: String
+  name_lt: String
 
   """
   All values less than or equal the given value.
   """
-  fullName_lte: String
+  name_lte: String
 
   """
   All values greater than the given value.
   """
-  fullName_gt: String
+  name_gt: String
 
   """
   All values greater than or equal the given value.
   """
-  fullName_gte: String
+  name_gte: String
 
   """
   All values containing the given string.
   """
-  fullName_contains: String
+  name_contains: String
 
   """
   All values not containing the given string.
   """
-  fullName_not_contains: String
+  name_not_contains: String
 
   """
   All values starting with the given string.
   """
-  fullName_starts_with: String
+  name_starts_with: String
 
   """
   All values not starting with the given string.
   """
-  fullName_not_starts_with: String
+  name_not_starts_with: String
 
   """
   All values ending with the given string.
   """
-  fullName_ends_with: String
+  name_ends_with: String
 
   """
   All values not ending with the given string.
   """
-  fullName_not_ends_with: String
+  name_not_ends_with: String
   isFork: Boolean
 
   """
   All values that are not equal to given value.
   """
   isFork_not: Boolean
+  owner: String
+
+  """
+  All values that are not equal to given value.
+  """
+  owner_not: String
+
+  """
+  All values that are contained in given list.
+  """
+  owner_in: [String!]
+
+  """
+  All values that are not contained in given list.
+  """
+  owner_not_in: [String!]
+
+  """
+  All values less than the given value.
+  """
+  owner_lt: String
+
+  """
+  All values less than or equal the given value.
+  """
+  owner_lte: String
+
+  """
+  All values greater than the given value.
+  """
+  owner_gt: String
+
+  """
+  All values greater than or equal the given value.
+  """
+  owner_gte: String
+
+  """
+  All values containing the given string.
+  """
+  owner_contains: String
+
+  """
+  All values not containing the given string.
+  """
+  owner_not_contains: String
+
+  """
+  All values starting with the given string.
+  """
+  owner_starts_with: String
+
+  """
+  All values not starting with the given string.
+  """
+  owner_not_starts_with: String
+
+  """
+  All values ending with the given string.
+  """
+  owner_ends_with: String
+
+  """
+  All values not ending with the given string.
+  """
+  owner_not_ends_with: String
   size: Int
 
   """
@@ -1009,6 +1776,8 @@ input RepoWhereInput {
 
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  pinnedRepo(where: PinnedRepoSubscriptionWhereInput): PinnedRepoSubscriptionPayload
+  pullRequest(where: PullRequestSubscriptionWhereInput): PullRequestSubscriptionPayload
   repo(where: RepoSubscriptionWhereInput): RepoSubscriptionPayload
   language(where: LanguageSubscriptionWhereInput): LanguageSubscriptionPayload
 }
@@ -1017,9 +1786,28 @@ type User {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
+  pinnedRepositories(
+    where: PinnedRepoWhereInput
+    orderBy: PinnedRepoOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [PinnedRepo!]
   profileCreatedAt: String
+  pullRequests(
+    where: PullRequestWhereInput
+    orderBy: PullRequestOrderByInput
+    skip: Int
+    after: String
+    before: String
+    first: Int
+    last: Int
+  ): [PullRequest!]
   repos(
     where: RepoWhereInput
     orderBy: RepoOrderByInput
@@ -1055,6 +1843,7 @@ input UserCreateInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1062,7 +1851,19 @@ input UserCreateInput {
   uid: String!
   url: String
   username: String!
+  pinnedRepositories: PinnedRepoCreateManyWithoutUserInput
+  pullRequests: PullRequestCreateManyWithoutUserInput
   repos: RepoCreateManyWithoutUserInput
+}
+
+input UserCreateOneWithoutPinnedRepositoriesInput {
+  create: UserCreateWithoutPinnedRepositoriesInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutPullRequestsInput {
+  create: UserCreateWithoutPullRequestsInput
+  connect: UserWhereUniqueInput
 }
 
 input UserCreateOneWithoutReposInput {
@@ -1070,10 +1871,11 @@ input UserCreateOneWithoutReposInput {
   connect: UserWhereUniqueInput
 }
 
-input UserCreateWithoutReposInput {
+input UserCreateWithoutPinnedRepositoriesInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1081,6 +1883,40 @@ input UserCreateWithoutReposInput {
   uid: String!
   url: String
   username: String!
+  pullRequests: PullRequestCreateManyWithoutUserInput
+  repos: RepoCreateManyWithoutUserInput
+}
+
+input UserCreateWithoutPullRequestsInput {
+  bio: String
+  followers: Int
+  following: Int
+  issues: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  time: String!
+  uid: String!
+  url: String
+  username: String!
+  pinnedRepositories: PinnedRepoCreateManyWithoutUserInput
+  repos: RepoCreateManyWithoutUserInput
+}
+
+input UserCreateWithoutReposInput {
+  bio: String
+  followers: Int
+  following: Int
+  issues: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  time: String!
+  uid: String!
+  url: String
+  username: String!
+  pinnedRepositories: PinnedRepoCreateManyWithoutUserInput
+  pullRequests: PullRequestCreateManyWithoutUserInput
 }
 
 """
@@ -1105,6 +1941,8 @@ enum UserOrderByInput {
   followers_DESC
   following_ASC
   following_DESC
+  issues_ASC
+  issues_DESC
   name_ASC
   name_DESC
   pic_ASC
@@ -1131,6 +1969,7 @@ type UserPreviousValues {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1189,6 +2028,7 @@ input UserUpdateInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1196,7 +2036,25 @@ input UserUpdateInput {
   uid: String
   url: String
   username: String
+  pinnedRepositories: PinnedRepoUpdateManyWithoutUserInput
+  pullRequests: PullRequestUpdateManyWithoutUserInput
   repos: RepoUpdateManyWithoutUserInput
+}
+
+input UserUpdateOneWithoutPinnedRepositoriesInput {
+  create: UserCreateWithoutPinnedRepositoriesInput
+  connect: UserWhereUniqueInput
+  delete: Boolean
+  update: UserUpdateWithoutPinnedRepositoriesDataInput
+  upsert: UserUpsertWithoutPinnedRepositoriesInput
+}
+
+input UserUpdateOneWithoutPullRequestsInput {
+  create: UserCreateWithoutPullRequestsInput
+  connect: UserWhereUniqueInput
+  delete: Boolean
+  update: UserUpdateWithoutPullRequestsDataInput
+  upsert: UserUpsertWithoutPullRequestsInput
 }
 
 input UserUpdateOneWithoutReposInput {
@@ -1207,10 +2065,11 @@ input UserUpdateOneWithoutReposInput {
   upsert: UserUpsertWithoutReposInput
 }
 
-input UserUpdateWithoutReposDataInput {
+input UserUpdateWithoutPinnedRepositoriesDataInput {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
   profileCreatedAt: String
@@ -1218,6 +2077,50 @@ input UserUpdateWithoutReposDataInput {
   uid: String
   url: String
   username: String
+  pullRequests: PullRequestUpdateManyWithoutUserInput
+  repos: RepoUpdateManyWithoutUserInput
+}
+
+input UserUpdateWithoutPullRequestsDataInput {
+  bio: String
+  followers: Int
+  following: Int
+  issues: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  time: String
+  uid: String
+  url: String
+  username: String
+  pinnedRepositories: PinnedRepoUpdateManyWithoutUserInput
+  repos: RepoUpdateManyWithoutUserInput
+}
+
+input UserUpdateWithoutReposDataInput {
+  bio: String
+  followers: Int
+  following: Int
+  issues: Int
+  name: String
+  pic: String
+  profileCreatedAt: String
+  time: String
+  uid: String
+  url: String
+  username: String
+  pinnedRepositories: PinnedRepoUpdateManyWithoutUserInput
+  pullRequests: PullRequestUpdateManyWithoutUserInput
+}
+
+input UserUpsertWithoutPinnedRepositoriesInput {
+  update: UserUpdateWithoutPinnedRepositoriesDataInput!
+  create: UserCreateWithoutPinnedRepositoriesInput!
+}
+
+input UserUpsertWithoutPullRequestsInput {
+  update: UserUpdateWithoutPullRequestsDataInput!
+  create: UserCreateWithoutPullRequestsInput!
 }
 
 input UserUpsertWithoutReposInput {
@@ -1378,6 +2281,42 @@ input UserWhereInput {
   All values greater than or equal the given value.
   """
   following_gte: Int
+  issues: Int
+
+  """
+  All values that are not equal to given value.
+  """
+  issues_not: Int
+
+  """
+  All values that are contained in given list.
+  """
+  issues_in: [Int!]
+
+  """
+  All values that are not contained in given list.
+  """
+  issues_not_in: [Int!]
+
+  """
+  All values less than the given value.
+  """
+  issues_lt: Int
+
+  """
+  All values less than or equal the given value.
+  """
+  issues_lte: Int
+
+  """
+  All values greater than the given value.
+  """
+  issues_gt: Int
+
+  """
+  All values greater than or equal the given value.
+  """
+  issues_gte: Int
   name: String
 
   """
@@ -1840,6 +2779,12 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   username_not_ends_with: String
+  pinnedRepositories_every: PinnedRepoWhereInput
+  pinnedRepositories_some: PinnedRepoWhereInput
+  pinnedRepositories_none: PinnedRepoWhereInput
+  pullRequests_every: PullRequestWhereInput
+  pullRequests_some: PullRequestWhereInput
+  pullRequests_none: PullRequestWhereInput
   repos_every: RepoWhereInput
   repos_some: RepoWhereInput
   repos_none: RepoWhereInput

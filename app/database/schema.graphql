@@ -2,9 +2,12 @@ type User {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
+  pinnedRepositories: [PinnedRepo!]! @relation(name: "UserPinnedRepo", onDelete: CASCADE)
   profileCreatedAt: String
+  pullRequests: [PullRequest!]! @relation(name: "UserPRs", onDelete: CASCADE)
   repos: [Repo!]! @relation(name: "UserRepos", onDelete: CASCADE)
   time: String!
   uid: String! @unique
@@ -12,13 +15,31 @@ type User {
   username: String! @unique
 }
 
+type PinnedRepo {
+  user: User! @relation(name: "UserPinnedRepo", onDelete: SET_NULL)
+  name: String!
+  owner: String!
+}
+
+type PullRequest {
+  user: User! @relation(name: "UserPRs", onDelete: SET_NULL)
+  title: String
+  openedAt: String
+  closed: Boolean
+  merged: Boolean
+  mergedAt: String
+  isFork: Boolean
+  commits: Int
+  repository: Json
+}
+
 type Repo {
   user: User! @relation(name: "UserRepos", onDelete: SET_NULL)
-  branch: String
   forks: Int
-  fullName: String
+  name: String!
   isFork: Boolean
   languages: [Language!]!
+  owner: String!
   size: Int
   stars: Int
   url: String

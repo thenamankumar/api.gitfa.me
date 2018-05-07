@@ -1,16 +1,25 @@
+#import PullRequest from './PullRequest.graphql'
 #import Repo from './Repo.graphql'
 
 type User {
   bio: String
   followers: Int
   following: Int
+  issues: Int
   name: String
   pic: String
+  pinnedRepositories: [PinnedRepo]
   profileCreatedAt: String
+  pullRequests: [PullRequest]
   repos: [Repo]
   status: Int
-  time: String!
+  time: String
   uid: String
   url: String
   username: String!
+}
+
+type PinnedRepo {
+  name: String!
+  owner: String!
 }

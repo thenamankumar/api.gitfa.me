@@ -2,36 +2,7 @@ import fetchData from '../../actions/fetchData';
 
 export default async (parent, { username, fresh }, { db }, info) => {
   // find user data in db
-  const findUser = await db.query.user(
-    { where: { username } },
-    `{ 
-      bio
-      followers
-      following
-      name
-      pic
-      profileCreatedAt
-      repos {
-          branch
-          forks
-          fullName
-          isFork
-          languages {
-            name
-            color
-          }
-          size
-          stars
-          url
-          userCommits
-          watchers
-      }
-      time 
-      uid
-      url
-      username
-    }`,
-  );
+  const findUser = await db.query.user({ where: { username } }, `{ time }`);
   const updateTimeThreshold = 24 * 60 * 60 * 1000; // 1 day
   let result; // final result
 
@@ -40,7 +11,7 @@ export default async (parent, { username, fresh }, { db }, info) => {
       return data preset in db if fresh data not requested
       or if requested then data is already latest
     */
-    result = findUser;
+    result = await db.query.user({ where: { username } }, info);
   } else if (!findUser || (fresh && new Date() - new Date(findUser.time) > updateTimeThreshold)) {
     /*
       fetch new data for:
@@ -58,10 +29,16 @@ export default async (parent, { username, fresh }, { db }, info) => {
 
     if (status === 200) {
       // fresh data fetch successful
-      const { repos, ...profileData } = data;
+      const { pinnedRepositories, pullRequests, repos, ...profileData } = data;
 
       const addUserDataPayload = {
         ...profileData,
+        pinnedRepositories: {
+          create: pinnedRepositories,
+        },
+        pullRequests: {
+          create: pullRequests,
+        },
         repos: {
           create: repos.map(({ languages, ...rest }) => ({
             ...rest,
