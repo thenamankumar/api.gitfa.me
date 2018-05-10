@@ -1,6 +1,7 @@
 import fetchData from '../../actions/fetchData';
 
 export default async (parent, { username, fresh }, { db }, info) => {
+  username = (username || '').toLowerCase(); // eslint-disable-line
   // find user data in db
   const findUser = await db.query.user({ where: { username } }, `{ time }`);
   const updateTimeThreshold = 24 * 60 * 60 * 1000; // 1 day
