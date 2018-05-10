@@ -49,7 +49,7 @@ const fetchData = async username => {
       profileCreatedAt: profile.createdAt,
       uid: profile.id,
       url: profile.url,
-      username: profile.login,
+      username: (profile.login || '').toLowerCase(),
     };
 
     /*
