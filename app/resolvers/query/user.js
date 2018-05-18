@@ -52,17 +52,13 @@ export default async (parent, { username, fresh }, { db }, info) => {
 
       if (findUser) {
         /*
-          temporarily update mutation not working
+          temporarily update/upsert mutation not working
           delete and create new user
         */
-        result = await db.mutation.upsertUser(
-          {
-            where: { username },
-            create: addUserDataPayload,
-            update: addUserDataPayload,
-          },
-          info,
-        );
+        const deleted = await db.mutation.deleteUser({ where: { username } }, `{username}`);
+        if (deleted.username === username) {
+          result = await db.mutation.createUser({ data: addUserDataPayload }, info);
+        }
       } else {
         result = await db.mutation.createUser({ data: addUserDataPayload }, info);
       }
