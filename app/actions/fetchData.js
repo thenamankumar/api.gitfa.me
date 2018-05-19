@@ -81,7 +81,6 @@ const fetchData = async username => {
     */
 
     signale.time('Fetch Repositories Data');
-    const startReposDataTime = new Date();
     // detailed repo stats
     const reposDetailedDataCollection = await Promise.all(
       reposList.map(({ owner, name }) => fetchRepo(owner, name, username, data.uid)),
