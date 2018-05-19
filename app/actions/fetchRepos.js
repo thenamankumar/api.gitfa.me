@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import signale from 'signale';
 import { reposPayload } from './payload';
 
 const fetchRepos = async (username, uid, endCursor = null) => {
@@ -29,7 +30,7 @@ const fetchRepos = async (username, uid, endCursor = null) => {
 
   // collection of 20 repos
   const repos = reposData.data.user.repositories.nodes;
-  console.log(`Successfully ${repos.length} repos collection ${endCursor} fetched in ${new Date() - startTime}ms`);
+  signale.success(`Successfully ${repos.length} repos collection ${endCursor} fetched in ${new Date() - startTime}ms`);
 
   // compile repo data
   return repos.map(repo => ({
