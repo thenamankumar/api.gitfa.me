@@ -7,8 +7,8 @@ const fetchPullRequests = async (username, acm = [], endCursor = null) => {
     Accumulate all pull requests in series and return
     array of pull requests (acm). Fetch 100 PR at a time
   */
-  const startTime = new Date();
 
+  signale.time('Fetch Pull requests');
   const prResponse = await fetch('https://api.github.com/graphql', {
     method: 'POST',
     body: JSON.stringify(pullRequestsPayload(username, endCursor)),
@@ -29,7 +29,8 @@ const fetchPullRequests = async (username, acm = [], endCursor = null) => {
   const cursor = prData.data.user.pullRequests.pageInfo.endCursor;
   // current set of pull requests
   const pullRequests = prData.data.user.pullRequests.nodes || [];
-  signale.success(`Successfully ${pullRequests.length} pull requests ${cursor} fetched in ${new Date() - startTime}ms`);
+  signale.success(`Successfully ${pullRequests.length} pull requests ${cursor} fetched`);
+  signale.timeEnd('Fetch Pull requests');
 
   // compile pull requests data and push current set of pull requests to accumulator
   const updatedAcm = [

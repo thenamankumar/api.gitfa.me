@@ -10,6 +10,8 @@ const fetchData = async username => {
   let data = {}; // final data to return
 
   try {
+    signale.time('Fetch Github Data');
+
     // fetch user profile data
     const profileResponse = await fetch('https://api.github.com/graphql', {
       method: 'POST',
@@ -57,11 +59,10 @@ const fetchData = async username => {
     /*
       Accumulate list of all pull requests
     */
-    const startPRTime = new Date();
+    signale.time('Fetch Pull Requests');
     const pullRequests = await fetchPullRequests(username);
-    signale.success(
-      `Fetched ${pullRequests.length} pull requests for user: ${username} in ${new Date() - startPRTime}ms`,
-    );
+    signale.success(`Fetched ${pullRequests.length} pull requests for user: ${username}`);
+    signale.timeEnd('Fetch Pull Requests');
     data.pullRequests = pullRequests;
 
     /*
@@ -69,16 +70,17 @@ const fetchData = async username => {
       in series and return array of repos (acm).
       Fetch basic details for 100 repos at a time.
     */
-    const startReposListTime = new Date();
+    signale.time('Fetch Repo List');
     const reposList = await fetchReposList(username);
-    signale.success(
-      `Fetched ${reposList.length} repos list for user: ${username} in ${new Date() - startReposListTime}ms`,
-    );
+    signale.success(`Fetched ${reposList.length} repos list for user: ${username}`);
+    signale.timeEnd('Fetch Repo List');
 
     /*
       For each repo in the repo list fetch
       detailed stats data in parallel.
     */
+
+    signale.time('Fetch Repositories Data');
     const startReposDataTime = new Date();
     // detailed repo stats
     const reposDetailedDataCollection = await Promise.all(
@@ -87,13 +89,11 @@ const fetchData = async username => {
 
     // accumulate repos data and add to user data
     data.repos = reposList.map((repoBasicData, index) => ({ ...repoBasicData, ...reposDetailedDataCollection[index] }));
+    signale.success(`Fetched ${data.repos.length} repos detailed data for user: ${username}`);
 
-    signale.success(
-      `Fetched ${data.repos.length} repos detailed data for user: ${username} in ${new Date() - startReposDataTime}ms`,
-    );
+    signale.timeEnd('Fetch Repositories Data');
 
-    // set current time
-    data.time = new Date();
+    signale.timeEnd('Fetch Github Data');
   } catch (err) {
     signale.fatal(`Error fetching data from github: ${username}, message: ${err}`);
     return {

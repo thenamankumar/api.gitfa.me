@@ -8,8 +8,8 @@ const fetchReposList = async (username, acm = [], endCursor = null) => {
     in series and return array of repos (acm).
     Fetch basic details for 100 repos at a time.
   */
-  const startTime = new Date();
 
+  signale.time('Fetch Repositories List (max 100)');
   const reposResponse = await fetch('https://api.github.com/graphql', {
     method: 'POST',
     body: JSON.stringify(reposBasicPayload(username, endCursor)),
@@ -30,7 +30,8 @@ const fetchReposList = async (username, acm = [], endCursor = null) => {
   const cursor = reposList.data.user.repositories.pageInfo.endCursor;
   // current set of repos
   const repos = reposList.data.user.repositories.nodes;
-  signale.success(`Successfully ${repos.length} repos list fetched in ${new Date() - startTime}ms`);
+  signale.success(`Successfully ${repos.length} repos list fetched`);
+  signale.time('Fetch Repositories List (max 100)');
 
   // compile repos data and push current set of repos to accumulator
   const updatedAcm = [
