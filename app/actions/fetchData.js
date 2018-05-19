@@ -6,11 +6,10 @@ import fetchRepo from './fetchRepo';
 import fetchPullRequests from './fetchPullRequests';
 
 const fetchData = async username => {
-  signale.pending(`Fetching data from github: ${username}`);
   let data = {}; // final data to return
 
   try {
-    signale.time('Fetch Github Data');
+    signale.time(`Fetching data from github for ${username}`);
 
     // fetch user profile data
     const profileResponse = await fetch('https://api.github.com/graphql', {
@@ -30,7 +29,7 @@ const fetchData = async username => {
     const profile = ((await profileResponse.json()).data || {}).user; // user profile
     if (!profile) {
       // return 404 if user not found on github
-      signale.fatal(`User non found on github: ${username}`);
+      signale.warning(`User non found on github: ${username}`);
 
       return {
         status: 404,
@@ -59,10 +58,9 @@ const fetchData = async username => {
     /*
       Accumulate list of all pull requests
     */
-    signale.time('Fetch Pull Requests');
+    signale.time(`Fetching pull requests for ${username}`);
     const pullRequests = await fetchPullRequests(username);
-    signale.success(`Fetched ${pullRequests.length} pull requests for user: ${username}`);
-    signale.timeEnd('Fetch Pull Requests');
+    signale.timeEnd(`Fetching pull requests for ${username}`);
     data.pullRequests = pullRequests;
 
     /*
@@ -70,29 +68,28 @@ const fetchData = async username => {
       in series and return array of repos (acm).
       Fetch basic details for 100 repos at a time.
     */
-    signale.time('Fetch Repo List');
+    signale.time(`Fetching repos list for ${username}`);
     const reposList = await fetchReposList(username);
-    signale.success(`Fetched ${reposList.length} repos list for user: ${username}`);
-    signale.timeEnd('Fetch Repo List');
+    signale.timeEnd(`Fetching repos list for ${username}`);
 
     /*
       For each repo in the repo list fetch
       detailed stats data in parallel.
     */
 
-    signale.time('Fetch Repositories Data');
+    signale.time(`Fetching repo data for ${username}`);
     // detailed repo stats
     const reposDetailedDataCollection = await Promise.all(
       reposList.map(({ owner, name }) => fetchRepo(owner, name, username, data.uid)),
     );
+    signale.timeEnd(`Fetching repo data for ${username}`);
 
     // accumulate repos data and add to user data
+    // set current time
+    data.time = new Date();
     data.repos = reposList.map((repoBasicData, index) => ({ ...repoBasicData, ...reposDetailedDataCollection[index] }));
-    signale.success(`Fetched ${data.repos.length} repos detailed data for user: ${username}`);
 
-    signale.timeEnd('Fetch Repositories Data');
-
-    signale.timeEnd('Fetch Github Data');
+    signale.timeEnd(`Fetching data from github for ${username}`);
   } catch (err) {
     signale.fatal(`Error fetching data from github: ${username}, message: ${err}`);
     return {

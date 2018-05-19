@@ -7,7 +7,6 @@ const fetchRepos = async (username, uid, endCursor = null) => {
     Fetch next 20 repos based on cursor
   */
 
-  signale.time('Fetch Repositories (max 20)');
   const reposResponse = await fetch('https://api.github.com/graphql', {
     method: 'POST',
     body: JSON.stringify(reposPayload(username, uid, endCursor)),
@@ -31,8 +30,7 @@ const fetchRepos = async (username, uid, endCursor = null) => {
 
   // collection of 20 repos
   const repos = reposData.data.user.repositories.nodes;
-  signale.success(`Successfully ${repos.length} repos collection ${endCursor} fetched`);
-  signale.timeEnd('Fetch Repositories (max 20)');
+  signale.success(`Fetched ${repos.length} repos collection for ${username}`);
 
   // compile repo data
   return repos.map(repo => ({

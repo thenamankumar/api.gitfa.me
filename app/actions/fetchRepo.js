@@ -6,8 +6,6 @@ const fetchRepo = async (owner, name, username, uid) => {
   /*
     Fetch detailed repo data
   */
-  signale.time('Fetch Details for a Repository');
-
   const repoResponse = await fetch('https://api.github.com/graphql', {
     method: 'POST',
     body: JSON.stringify(repoPayload(owner, name, uid)),
@@ -30,9 +28,7 @@ const fetchRepo = async (owner, name, username, uid) => {
   }
 
   const repo = repoData.data.repository || {};
-  signale.success(`Successfully repo ${username}@${owner}/${name} detailed data fetched`);
-
-  signale.timeEnd('Fetch Repository');
+  signale.success(`Fetched repo ${username}@${owner}/${name} data`);
 
   // return repo data
   return {

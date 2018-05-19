@@ -29,7 +29,7 @@ const fetchPullRequests = async (username, acm = [], endCursor = null) => {
   const cursor = prData.data.user.pullRequests.pageInfo.endCursor;
   // current set of pull requests
   const pullRequests = prData.data.user.pullRequests.nodes || [];
-  signale.success(`Successfully ${pullRequests.length} pull requests ${cursor} fetched`);
+  signale.success(`Fetched ${pullRequests.length} pull requests for ${username}`);
   signale.timeEnd('Fetch Pull requests');
 
   // compile pull requests data and push current set of pull requests to accumulator
