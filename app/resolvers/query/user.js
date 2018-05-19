@@ -1,4 +1,5 @@
 import fetchData from '../../actions/fetchData';
+import signale from 'signale';
 
 export default async (parent, { username, fresh }, { db }, info) => {
   username = (username || '').toLowerCase(); // eslint-disable-line
@@ -21,9 +22,9 @@ export default async (parent, { username, fresh }, { db }, info) => {
     */
 
     if (!findUser) {
-      console.log(`Data for user ${username} not present.`);
+      signale.note(`Data for user ${username} not present.`);
     } else {
-      console.log(`Fresh data requested for ${username}.`);
+      signale.star(`Fresh data requested for ${username}.`);
     }
     // fetch fresh user data
     const { status, data } = await fetchData(username);

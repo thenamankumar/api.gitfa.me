@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import signale from 'signale';
 import { reposBasicPayload } from './payload';
 
 const fetchReposList = async (username, acm = [], endCursor = null) => {
@@ -7,7 +8,6 @@ const fetchReposList = async (username, acm = [], endCursor = null) => {
     in series and return array of repos (acm).
     Fetch basic details for 100 repos at a time.
   */
-  const startTime = new Date();
 
   const reposResponse = await fetch('https://api.github.com/graphql', {
     method: 'POST',
@@ -29,7 +29,7 @@ const fetchReposList = async (username, acm = [], endCursor = null) => {
   const cursor = reposList.data.user.repositories.pageInfo.endCursor;
   // current set of repos
   const repos = reposList.data.user.repositories.nodes;
-  console.log(`Successfully ${repos.length} repos list fetched in ${new Date() - startTime}ms`);
+  signale.success(`Fetched ${repos.length} repos list for ${username}`);
 
   // compile repos data and push current set of repos to accumulator
   const updatedAcm = [

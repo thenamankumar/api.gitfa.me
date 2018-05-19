@@ -1,3 +1,4 @@
+import signale from 'signale';
 import fetch from 'node-fetch';
 import { cursorPayload } from './payload';
 
@@ -26,7 +27,7 @@ const fetchAllCursors = async (username, acm = [], endCursor = null) => {
 
   // current cursor
   const cursor = cursorData.data.user.repositories.pageInfo.endCursor;
-  console.log(`Successfully cursor ${cursor} fetched in ${new Date() - startTime}ms`);
+  signale.success(`Successfully cursor ${cursor} fetched in ${new Date() - startTime}ms`);
 
   // push current cursor to accumulator
   acm.push(cursor);

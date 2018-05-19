@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import { GraphQLServer } from 'graphql-yoga';
 import { Prisma } from 'prisma-binding';
 import { ApolloEngine } from 'apollo-engine';
+import signale from 'signale';
 import compression from 'compression';
 import Raven from 'raven';
 import cors from 'cors';
@@ -67,7 +68,7 @@ if (process.env.NODE_ENV === 'production') {
       httpServer, // graphql server
       graphqlPaths: ['/'], // graphql api path
     },
-    () => console.log(`Server with Apollo Engine and Sentry is running on http://localhost:${port}`),
+    () => signale.success(`Server with Apollo Engine and Sentry is running on http://localhost:${port}`),
   );
 } else {
   // start server without apollo engine
@@ -76,6 +77,6 @@ if (process.env.NODE_ENV === 'production') {
       port, // default 4000
       cors: serverOptions.cors, // allow cors from graphql
     },
-    () => console.log(`Server is running on http://localhost:${port}`),
+    () => signale.success(`Server is running on http://localhost:${port}`),
   );
 }
