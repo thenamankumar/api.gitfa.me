@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import signale from 'signale';
 import { reposBasicPayload } from './payload';
 
 const fetchReposList = async (username, acm = [], endCursor = null) => {
@@ -29,7 +30,7 @@ const fetchReposList = async (username, acm = [], endCursor = null) => {
   const cursor = reposList.data.user.repositories.pageInfo.endCursor;
   // current set of repos
   const repos = reposList.data.user.repositories.nodes;
-  console.log(`Successfully ${repos.length} repos list fetched in ${new Date() - startTime}ms`);
+  signale.success(`Successfully ${repos.length} repos list fetched in ${new Date() - startTime}ms`);
 
   // compile repos data and push current set of repos to accumulator
   const updatedAcm = [

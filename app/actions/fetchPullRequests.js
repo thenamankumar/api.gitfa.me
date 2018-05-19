@@ -1,3 +1,4 @@
+import signale from 'signale';
 import fetch from 'node-fetch';
 import { pullRequestsPayload } from './payload';
 
@@ -28,7 +29,7 @@ const fetchPullRequests = async (username, acm = [], endCursor = null) => {
   const cursor = prData.data.user.pullRequests.pageInfo.endCursor;
   // current set of pull requests
   const pullRequests = prData.data.user.pullRequests.nodes || [];
-  console.log(`Successfully ${pullRequests.length} pull requests ${cursor} fetched in ${new Date() - startTime}ms`);
+  signale.success(`Successfully ${pullRequests.length} pull requests ${cursor} fetched in ${new Date() - startTime}ms`);
 
   // compile pull requests data and push current set of pull requests to accumulator
   const updatedAcm = [

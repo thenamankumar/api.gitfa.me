@@ -1,3 +1,4 @@
+import signale from 'signale';
 import fetch from 'node-fetch';
 import { repoPayload } from './payload';
 
@@ -28,7 +29,9 @@ const fetchRepo = async (owner, name, username, uid) => {
   }
 
   const repo = repoData.data.repository || {};
-  console.log(`Successfully repo ${username}@${owner}/${name} detailed data fetched in ${new Date() - startTime}ms`);
+  signale.success(
+    `Successfully repo ${username}@${owner}/${name} detailed data fetched in ${new Date() - startTime}ms`,
+  );
 
   // return repo data
   return {
