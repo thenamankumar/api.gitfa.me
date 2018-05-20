@@ -10,9 +10,17 @@ import cors from 'cors';
 import redis from 'redis';
 import _ from './env'; // import before others
 import resolvers from './resolvers/';
+import RedisServer from 'redis-server';
 
 // server port
 const port = process.env.port || 4000;
+
+const redisServer = new RedisServer(6379);
+redisServer.open(err => {
+  if (err) {
+    signale.error(err);
+  }
+});
 
 const redisClient = redis.createClient();
 redisClient.on('error', signale.error);
