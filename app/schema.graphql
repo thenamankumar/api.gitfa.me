@@ -3,4 +3,5 @@
 
 type Query {
   user(username: String!, fresh: Boolean): User
+  latestUsers(first: Int): [User]
 }

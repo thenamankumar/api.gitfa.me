@@ -27,6 +27,8 @@
     "node-fetch": "^2.1.2",
     "prisma-binding": "^1.5.17",
     "raven": "^2.6.0",
+    "redis": "^2.8.0",
+    "redis-server": "^1.2.0",
     "signale": "^1.0.1",
     "winston": "^2.4.2"
   },
