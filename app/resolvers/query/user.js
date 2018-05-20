@@ -1,9 +1,8 @@
 import signale from 'signale';
 import redis from 'redis';
 import fetchData from '../../actions/fetchData';
-import { promisify } from 'util';
 
-export default async (parent, { username, fresh }, { db }, info) => {
+export default async (parent, { username, fresh }, { redisClient, getRedisAsync, db }, info) => {
   username = (username || '').toLowerCase(); // eslint-disable-line
   // find user data in db
   const findUser = await db.query.user({ where: { username } }, `{ time }`);
@@ -81,11 +80,9 @@ export default async (parent, { username, fresh }, { db }, info) => {
     status: 200,
   };
 
-  const redisClient = redis.createClient();
-  redisClient.on('error', signale.error);
-  const getAsync = promisify(redisClient.get).bind(redisClient);
-
-  const redisCache = [...(JSON.parse(await getAsync('api.gitfa.me/user')) || []), result].slice(-maxRedisCacheSize);
+  const redisCache = [...(JSON.parse(await getRedisAsync('api.gitfa.me/user')) || []), result].slice(
+    -maxRedisCacheSize,
+  );
   if (
     redisCache.length > 1 &&
     redisCache[redisCache.length - 1].username === redisCache[redisCache.length - 2].username
