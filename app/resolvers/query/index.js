@@ -1,7 +1,7 @@
 import user from './user';
-import latest from './latest';
+import latestUsers from './latestUsers';
 
 export default {
   user,
-  latest,
+  latestUsers,
 };
