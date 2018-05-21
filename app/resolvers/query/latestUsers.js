@@ -1,2 +1,6 @@
-export default async (parent, { first }, { getRedisAsync }, info) =>
-  (JSON.parse(await getRedisAsync('api.gitfa.me/user')) || []).slice(-first || -20);
+export default async (parent, { first }, { redisClient }, info) =>
+  first === 0
+    ? []
+    : redisClient
+        .zrevrangeAsync('latestUsersSet', 0, first ? first - 1 : 19)
+        .then(users => users.map(user => JSON.parse(user)));

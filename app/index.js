@@ -2,26 +2,29 @@ import 'babel-polyfill';
 import { GraphQLServer } from 'graphql-yoga';
 import { Prisma } from 'prisma-binding';
 import { ApolloEngine } from 'apollo-engine';
-import { promisify } from 'util';
+import bluebird from 'bluebird';
 import signale from 'signale';
 import compression from 'compression';
 import Raven from 'raven';
 import cors from 'cors';
 import redis from 'redis';
-import _ from './env'; // import before others
-import resolvers from './resolvers/';
 import RedisServer from 'redis-server';
+import _ from './utils/env'; // import first
+import resolvers from './resolvers/';
 
 // server port
 const port = process.env.port || 4000;
 
-const redisServer = new RedisServer(6379);
+// start redis server
+const redisServer = new RedisServer(); // default port 6379
 redisServer.open(err => {
   if (err) {
-    signale.error(err);
+    signale.fatal(err);
   }
 });
 
+// create Async functions for all methods
+bluebird.promisifyAll(redis.RedisClient.prototype);
 const redisClient = redis.createClient();
 redisClient.on('error', signale.error);
 
@@ -32,8 +35,6 @@ const server = new GraphQLServer({
   context: req => ({
     ...req,
     redisClient,
-    getRedisAsync: promisify(redisClient.get).bind(redisClient),
-    // verify request jwt token and add user payload to context
     db: new Prisma({
       typeDefs: 'app/database/api.graphql', // prisma generated db api schema
       endpoint: `http://localhost:4466/${process.env.DB_API_NAME}/${process.env.DB_API_STAGE}`,

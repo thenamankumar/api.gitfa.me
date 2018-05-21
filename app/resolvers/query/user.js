@@ -1,13 +1,13 @@
 import signale from 'signale';
-import redis from 'redis';
 import fetchData from '../../actions/fetchData';
+import getUserAll from '../../utils/getUserAll';
 
 export default async (parent, { username, fresh }, { redisClient, getRedisAsync, db }, info) => {
   username = (username || '').toLowerCase(); // eslint-disable-line
   // find user data in db
   const findUser = await db.query.user({ where: { username } }, `{ time }`);
   const updateTimeThreshold = 24 * 60 * 60 * 1000; // 1 day
-  const maxRedisCacheSize = 20;
+
   let result; // final result
 
   if (findUser && (!fresh || new Date() - new Date(findUser.time) <= updateTimeThreshold)) {
@@ -80,16 +80,17 @@ export default async (parent, { username, fresh }, { redisClient, getRedisAsync,
     status: 200,
   };
 
-  const redisCache = [...(JSON.parse(await getRedisAsync('api.gitfa.me/user')) || []), result].slice(
-    -maxRedisCacheSize,
-  );
-  if (
-    redisCache.length > 1 &&
-    redisCache[redisCache.length - 1].username === redisCache[redisCache.length - 2].username
-  ) {
-    redisClient.set('api.gitfa.me/user', JSON.stringify(redisCache.slice(0, -1)));
-  } else {
-    redisClient.set('api.gitfa.me/user', JSON.stringify(redisCache));
+  {
+    // add user data to sorted cache set
+    redisClient.zcardAsync('latestUsersSet').then(async len => {
+      if (len === 20) {
+        // pop oldest search if length exceeds 20
+        redisClient.zpopminAsync('latestUsersSet');
+      }
+    });
+
+    // add all user data to set with time as score
+    redisClient.zaddAsync('latestUsersSet', new Date().getTime(), JSON.stringify(await getUserAll(username, db)));
   }
 
   // return final result

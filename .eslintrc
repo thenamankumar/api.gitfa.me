@@ -12,6 +12,8 @@
     "no-console": 0,
     "no-unused-vars": 0,
     "no-underscore-dangle": 0,
+    "no-restricted-globals": 0,
+    "no-lone-blocks": 0,
     "prettier/prettier": "error"
   }
 }
