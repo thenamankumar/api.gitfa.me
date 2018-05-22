@@ -26,7 +26,7 @@
     "graphql": "^0.13.2",
     "graphql-yoga": "^1.13.1",
     "node-fetch": "^2.1.2",
-    "prisma-binding": "^1.5.17",
+    "prisma-binding": "^2.0.1",
     "raven": "^2.6.0",
     "redis": "^2.8.0",
     "redis-server": "^1.2.0",
