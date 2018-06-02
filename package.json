@@ -21,7 +21,7 @@
     "bluebird": "^3.5.1",
     "compression": "^1.7.2",
     "cors": "^2.8.4",
-    "dotenv": "^5.0.1",
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "graphql": "^0.13.2",
     "graphql-yoga": "^1.13.1",
