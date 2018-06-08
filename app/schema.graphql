@@ -4,4 +4,5 @@
 type Query {
   user(username: String!, fresh: Boolean): User
   latestUsers(first: Int): [User]
+  repositories(username: String!, uid: String!): [Repo]
 }
