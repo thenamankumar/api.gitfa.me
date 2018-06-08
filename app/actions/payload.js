@@ -52,7 +52,7 @@ const reposPayload = (username, id, endCursor) => ({
       query($username: String!, $id: ID!, $afterCursor: String)
       {
         user(login: $username) {
-          repositories(first: 20, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
+          repositories(first: 20, isFork: false, after: $afterCursor, orderBy: {field: NAME,direction: ASC}) {
             ...repoData
           }
         }
